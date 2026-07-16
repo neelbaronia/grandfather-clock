@@ -25,11 +25,11 @@
     }
 
     * { box-sizing: border-box; }
-    html { overflow-x: hidden; scroll-behavior: smooth; }
+    html { overflow-x: clip; scroll-behavior: smooth; }
     body {
       min-width: 320px;
       margin: 0;
-      overflow-x: hidden;
+      overflow-x: clip;
       background:
         repeating-linear-gradient(88deg, rgba(25, 54, 51, .025) 0 1px, transparent 1px 10px),
         #dfd0a9;
@@ -508,6 +508,162 @@
     .sync-line--b { top: 36%; left: 49%; width: 31%; transform: rotate(133deg); }
     .sync-line--c { top: 22%; left: 54%; width: 29%; transform: rotate(-20deg); }
 
+    /* Selected continuation — pendulum equation lab */
+    .continuation {
+      scroll-margin-top: 70px;
+      padding: 105px 42px 118px;
+      color: #f3e7bf;
+      border-top: 7px solid var(--red);
+      background:
+        repeating-linear-gradient(88deg, rgba(244, 230, 187, .025) 0 1px, transparent 1px 11px),
+        #173b39;
+    }
+    .continuation-inner { max-width: 1296px; margin: 0 auto; }
+    .continuation-head { display: grid; grid-template-columns: 1fr minmax(320px, 430px); gap: 7vw; align-items: end; margin-bottom: 38px; }
+    .continuation .option-id { color: #e2ae46; }
+    .continuation h2 { max-width: 10em; margin: 0; color: #f4e8c1; font: 700 clamp(3.2rem, 6vw, 6.4rem)/.85 "Iowan Old Style", Georgia, serif; letter-spacing: -.065em; }
+    .continuation-head > p { margin: 0; color: #cabf99; font-size: .86rem; line-height: 1.65; }
+
+    .pendulum-lab {
+      display: grid;
+      grid-template-columns: minmax(0, .94fr) minmax(430px, 1.06fr);
+      min-height: 720px;
+      overflow: hidden;
+      color: var(--ink);
+      border: 3px solid #e1b24e;
+      background: var(--paper);
+      box-shadow: 14px 15px 0 rgba(0, 0, 0, .2);
+    }
+    .lab-visual { position: relative; min-height: 720px; overflow: hidden; border-right: 3px solid var(--ink); background: repeating-linear-gradient(90deg, transparent 0 19px, rgba(23, 57, 54, .09) 19px 20px), #e5d395; }
+    .lab-visual::before { content: ''; position: absolute; inset: 8% 7% 28%; border: 3px dashed rgba(23, 57, 54, .28); border-bottom: 0; border-radius: 50% 50% 0 0; }
+    .lab-visual-label { position: absolute; top: 24px; left: 27px; color: var(--red); font: 700 .56rem/1 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
+    .lab-pivot { position: absolute; z-index: 7; top: 73px; left: 50%; width: 31px; aspect-ratio: 1; border: 6px solid var(--ink); border-radius: 50%; background: var(--paper); transform: translateX(-50%); }
+    .lab-pendulum {
+      --lab-angle: 6deg;
+      --lab-period: 2s;
+      --lab-length: 324px;
+      --bob-scale: 1;
+      position: absolute;
+      z-index: 6;
+      top: 88px;
+      left: 50%;
+      width: 7px;
+      height: var(--lab-length);
+      border-radius: 9px;
+      background: var(--gold);
+      transform-origin: 50% 0;
+      animation: lab-swing var(--lab-period) ease-in-out infinite;
+      will-change: transform;
+    }
+    .lab-bob { position: absolute; bottom: -48px; left: 50%; width: 92px; aspect-ratio: 1; border: 7px solid var(--ink); border-radius: 50%; background: var(--gold); box-shadow: inset 15px 14px 0 rgba(255, 238, 169, .3); transform: translateX(-50%) scale(var(--bob-scale)); transition: transform 240ms ease; }
+    .length-bracket { position: absolute; z-index: 3; top: 96px; left: 62%; height: 318px; width: 54px; border-top: 3px solid var(--red); border-right: 3px solid var(--red); border-bottom: 3px solid var(--red); }
+    .length-bracket span { position: absolute; top: 50%; left: 14px; color: var(--red); font: 700 .56rem/1 ui-monospace, monospace; letter-spacing: .05em; transform: translateY(-50%); }
+    .lab-trace { position: absolute; right: 5%; bottom: 28px; left: 5%; padding: 14px 17px 10px; border: 2px solid var(--ink); background: rgba(244, 235, 202, .9); }
+    .lab-trace-head { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 7px; color: var(--ink); font: 700 .55rem/1 ui-monospace, monospace; letter-spacing: .06em; }
+    .lab-trace-head span:last-child { color: var(--red); }
+    .lab-trace svg { display: block; width: 100%; height: 88px; overflow: visible; }
+    .trace-wave { fill: none; stroke: var(--red); stroke-width: 5; stroke-linecap: round; }
+    .trace-axis { stroke: rgba(23, 57, 54, .45); stroke-width: 2; }
+    .trace-period { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 5 5; }
+    .trace-label { fill: var(--ink); font: 700 12px ui-monospace, monospace; }
+
+    .lab-notebook { padding: clamp(28px, 3vw, 45px); background: repeating-linear-gradient(0deg, transparent 0 27px, rgba(23, 57, 54, .055) 27px 28px), #f4eaca; }
+    .lab-notebook .kicker { margin-bottom: 11px; }
+    .lab-notebook h3 { max-width: 10em; margin: 0; color: var(--ink); font: 700 clamp(2.2rem, 3.8vw, 4rem)/.91 "Iowan Old Style", Georgia, serif; letter-spacing: -.055em; }
+    .lab-notebook > p { max-width: 40em; margin: 18px 0 0; color: #514c40; font-size: .82rem; line-height: 1.6; }
+    .needs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin: 24px 0; background: var(--ink); border: 2px solid var(--ink); }
+    .needs span { min-height: 58px; display: grid; place-content: center; gap: 4px; padding: 9px; color: #625b4a; background: #e9dba8; font-size: .61rem; text-align: center; }
+    .needs b { color: var(--red); font: 800 .5rem/1 ui-monospace, monospace; letter-spacing: .05em; }
+    .needs .is-needed { color: var(--ink); background: var(--green); }
+    .needs .is-needed b { color: var(--ink); }
+    .lab-controls { display: grid; gap: 12px; margin: 23px 0; padding: 18px; border: 2px solid var(--ink); background: rgba(231, 210, 149, .54); }
+    .lab-control { display: grid; grid-template-columns: 82px 1fr 72px; gap: 13px; align-items: center; color: var(--ink); font: 700 .58rem/1 ui-monospace, monospace; letter-spacing: .04em; }
+    .lab-control output { color: var(--red); text-align: right; }
+    .lab-control input { width: 100%; accent-color: var(--red); }
+    .equation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 19px; background: var(--ink); border: 2px solid var(--ink); }
+    .equation-cell { min-height: 98px; padding: 15px 17px; background: #e7cf82; }
+    .equation-cell small { display: block; margin-bottom: 8px; color: var(--red); font: 700 .51rem/1 ui-monospace, monospace; letter-spacing: .07em; text-transform: uppercase; }
+    .equation-cell strong { color: var(--ink); font: italic 700 clamp(1.25rem, 2vw, 1.8rem)/1.1 Georgia, serif; }
+    .equation-cell span { display: block; margin-top: 7px; color: #6b5e42; font-size: .61rem; line-height: 1.35; }
+    .mass-cancel { margin-top: 17px; padding: 14px 16px; color: #f2e5bc; background: var(--red); font: 700 .71rem/1.55 ui-monospace, monospace; }
+    .wave-note { margin-top: 12px; padding: 13px 16px; border-left: 3px solid var(--red); color: #625b4a; background: rgba(216, 196, 127, .28); font-size: .68rem; line-height: 1.48; }
+    .wave-note b { color: var(--ink); }
+
+    /* Selected continuation — window-to-playground scrollytelling */
+    .swing-story { position: relative; height: 400svh; color: var(--ink); background: #d9c590; }
+    .swing-stage { position: sticky; z-index: 1; top: 70px; height: calc(100svh - 70px); min-height: 620px; overflow: hidden; background: #85a4a0; }
+    .yard-world { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(#83a5a1 0 58%, #99a873 58% 100%); }
+    .yard-world::before { content: ''; position: absolute; top: 13%; left: 8%; width: 140px; height: 52px; border-radius: 50%; background: rgba(244, 232, 195, .62); box-shadow: 430px 85px 0 14px rgba(244, 232, 195, .4), 850px -20px 0 -4px rgba(244, 232, 195, .52); }
+    .yard-world::after { content: ''; position: absolute; right: -5%; bottom: 0; left: -5%; height: 43%; background: repeating-linear-gradient(82deg, #62794f 0 16px, #718659 16px 30px, #879668 30px 36px); clip-path: polygon(0 20%, 13% 8%, 27% 18%, 42% 3%, 57% 20%, 75% 7%, 100% 19%, 100% 100%, 0 100%); }
+    .yard-tree { position: absolute; z-index: 2; right: 4%; bottom: 14%; width: 100px; height: 48%; border: 8px solid var(--ink); border-top: 0; border-bottom: 0; background: #744126; }
+    .yard-tree::before { content: ''; position: absolute; top: -29%; left: 50%; width: 270px; height: 210px; border: 7px solid var(--ink); border-radius: 52% 48% 55% 45%; background: #315d40; transform: translateX(-50%); box-shadow: -92px 61px 0 -37px #315d40, 88px 57px 0 -40px #244d38; }
+    .swing-subject { position: absolute; z-index: 5; top: 49%; left: 50%; width: 440px; height: 440px; transform: translate(-50%, -50%) scale(1); transform-origin: center; transition: top 900ms cubic-bezier(.22,1,.36,1), left 900ms cubic-bezier(.22,1,.36,1), transform 900ms cubic-bezier(.22,1,.36,1); }
+    .swing-frame { position: absolute; inset: 0; }
+    .swing-frame::before, .swing-frame::after { content: ''; position: absolute; top: 4%; width: 13px; height: 88%; border-radius: 9px; background: #754126; transform-origin: top; }
+    .swing-frame::before { left: 18%; transform: rotate(14deg); }
+    .swing-frame::after { right: 18%; transform: rotate(-14deg); }
+    .swing-beam { position: absolute; top: 4%; right: 13%; left: 13%; height: 17px; border: 4px solid var(--ink); background: #9d5a34; }
+    .swing-rider { position: absolute; z-index: 5; top: 8%; left: 50%; width: 170px; height: 330px; transform-origin: 50% 0; animation: playground-swing 2.4s ease-in-out infinite; }
+    .swing-rope { position: absolute; top: 0; width: 5px; height: 222px; background: #e0b14b; }
+    .swing-rope--a { left: 39px; }
+    .swing-rope--b { right: 39px; }
+    .swing-seat { position: absolute; top: 218px; left: 27px; width: 116px; height: 17px; border: 4px solid var(--ink); background: var(--red); }
+    .rider-head { position: absolute; z-index: 4; top: 139px; left: 63px; width: 46px; aspect-ratio: 1; border: 5px solid var(--ink); border-radius: 50%; background: #c97f56; }
+    .rider-body { position: absolute; z-index: 3; top: 180px; left: 56px; width: 61px; height: 75px; border: 5px solid var(--ink); border-radius: 25px 25px 5px 5px; background: var(--blue); }
+    .rider-leg { position: absolute; z-index: 2; top: 242px; left: 83px; width: 65px; height: 10px; border-radius: 8px; background: var(--ink); transform-origin: left; }
+    .rider-leg--a { transform: rotate(18deg); }
+    .rider-leg--b { transform: rotate(38deg); }
+    .pusher { position: absolute; z-index: 6; top: 43%; left: 7%; width: 118px; height: 205px; transform-origin: bottom; animation: child-push 2.4s ease-in-out infinite; }
+    .pusher-head { position: absolute; top: 0; left: 36px; width: 51px; aspect-ratio: 1; border: 5px solid var(--ink); border-radius: 50%; background: #b96849; }
+    .pusher-body { position: absolute; top: 45px; left: 27px; width: 67px; height: 94px; border: 5px solid var(--ink); border-radius: 27px 27px 7px 7px; background: #d3a13f; }
+    .pusher-arm { position: absolute; z-index: 4; top: 61px; left: 79px; width: 81px; height: 9px; border-radius: 9px; background: var(--ink); transform: rotate(-19deg); transform-origin: left; }
+    .pusher-leg { position: absolute; top: 132px; left: 43px; width: 9px; height: 73px; border-radius: 9px; background: var(--ink); transform-origin: top; }
+    .pusher-leg--a { transform: rotate(8deg); }
+    .pusher-leg--b { transform: rotate(-20deg); }
+    .push-burst { position: absolute; z-index: 8; top: 52%; left: 40%; width: 82px; height: 82px; opacity: 0; transition: opacity 380ms ease; }
+    .push-burst::before, .push-burst::after { content: ''; position: absolute; inset: 0; background: repeating-conic-gradient(var(--red) 0 5deg, transparent 5deg 29deg); clip-path: polygon(44% 0,56% 0,54% 39%,100% 44%,100% 56%,55% 54%,56% 100%,44% 100%,46% 55%,0 56%,0 44%,45% 46%); }
+
+    .room-walls { position: absolute; z-index: 12; inset: 0; pointer-events: none; opacity: 1; transition: opacity 700ms ease; }
+    .room-wall-left, .room-wall-top, .room-wall-right, .room-wall-bottom { position: absolute; background: repeating-linear-gradient(90deg, transparent 0 18px, rgba(23,57,54,.1) 18px 19px), #eee3bd; }
+    .room-wall-left { top: 0; bottom: 0; left: 0; width: 58%; }
+    .room-wall-top { top: 0; right: 8%; left: 58%; height: 11%; }
+    .room-wall-right { top: 0; right: 0; bottom: 0; width: 8%; }
+    .room-wall-bottom { right: 8%; bottom: 0; left: 58%; height: 24%; background: repeating-linear-gradient(5deg, #a96338 0 15px, #6c3b28 15px 17px); }
+    .window-frame { position: absolute; top: 10%; right: 7%; width: 36%; height: 67%; border: 16px solid #754126; outline: 6px solid var(--ink); box-shadow: inset 0 0 0 5px #d5ad5a; }
+    .window-frame::before, .window-frame::after { content: ''; position: absolute; z-index: 2; background: #754126; }
+    .window-frame::before { top: 0; bottom: 0; left: calc(50% - 5px); width: 10px; }
+    .window-frame::after { top: calc(50% - 5px); right: 0; left: 0; height: 10px; }
+    .return-clock { position: absolute; z-index: 14; top: 9%; left: 16%; width: 240px; height: 77%; border: 8px solid var(--ink); background: #844426; clip-path: polygon(14% 0, 86% 0, 100% 12%, 94% 100%, 6% 100%, 0 12%); transition: opacity 700ms ease, transform 800ms ease; }
+    .return-clock::before { content: ''; position: absolute; top: 8%; left: 50%; width: 74%; aspect-ratio: 1; border: 7px solid var(--ink); border-radius: 50%; background: conic-gradient(var(--ink) 0 2deg, transparent 2deg 29deg, var(--ink) 29deg 30deg), var(--paper); transform: translateX(-50%); }
+    .return-clock::after { content: ''; position: absolute; top: 43%; right: 18%; bottom: 8%; left: 18%; border: 7px solid var(--ink); background: radial-gradient(circle at 50% 76%, var(--gold) 0 11%, transparent 11.5%), linear-gradient(90deg, transparent 48%, var(--gold) 49% 51%, transparent 52%), #43251f; }
+    .room-rug { position: absolute; z-index: 13; right: 8%; bottom: -17%; left: 0; height: 38%; border: 10px solid var(--ink); background: repeating-conic-gradient(var(--red) 0 12deg, var(--gold) 12deg 19deg, var(--blue) 19deg 28deg); }
+
+    .swing-steps { position: absolute; z-index: 20; top: 0; right: 0; left: 0; height: 400svh; }
+    .swing-step { min-height: 100svh; display: grid; grid-template-columns: repeat(12, 1fr); align-items: center; padding: 105px max(7vw, 50px) 70px; pointer-events: none; }
+    .swing-card { width: min(100%, 450px); padding: 29px 31px; color: var(--ink); border: 2px solid var(--ink); background: rgba(246, 238, 211, .96); box-shadow: 10px 11px 0 rgba(145, 45, 41, .2); pointer-events: auto; }
+    .swing-step:nth-child(odd) .swing-card { grid-column: 1 / span 5; }
+    .swing-step:nth-child(even) .swing-card { grid-column: 8 / span 5; justify-self: end; }
+    .swing-card small { display: block; margin-bottom: 9px; color: var(--red); font: 700 .57rem/1 ui-monospace, monospace; letter-spacing: .09em; text-transform: uppercase; }
+    .swing-card h3 { margin: 0; color: var(--ink); font: 700 clamp(2.25rem, 4vw, 4.15rem)/.9 "Iowan Old Style", Georgia, serif; letter-spacing: -.055em; }
+    .swing-card p { margin: 17px 0 0; color: #514c40; font-size: .86rem; line-height: 1.6; }
+    .swing-card .precision { padding: 13px 0 0 16px; border-left: 2px solid var(--red); color: #756b56; font-size: .71rem; }
+    .swing-progress { position: absolute; z-index: 30; right: 23px; bottom: 20px; color: var(--red); font: 700 .54rem/1 ui-monospace, monospace; letter-spacing: .08em; }
+
+    .swing-stage[data-swing-step="0"] .swing-subject,
+    .swing-stage[data-swing-step="3"] .swing-subject { top: 42%; left: 76%; transform: translate(-50%, -50%) scale(.42); }
+    .swing-stage[data-swing-step="1"] .room-walls,
+    .swing-stage[data-swing-step="2"] .room-walls { opacity: 0; }
+    .swing-stage[data-swing-step="1"] .return-clock,
+    .swing-stage[data-swing-step="2"] .return-clock,
+    .swing-stage[data-swing-step="1"] .room-rug,
+    .swing-stage[data-swing-step="2"] .room-rug { opacity: 0; transform: translateX(-80px); }
+    .swing-stage[data-swing-step="2"] .push-burst { opacity: 1; animation: push-pulse 1.2s ease-out infinite; }
+
+    @keyframes lab-swing { 0%, 100% { transform: rotate(calc(var(--lab-angle) * -1)); } 50% { transform: rotate(var(--lab-angle)); } }
+    @keyframes playground-swing { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+    @keyframes child-push { 0%, 38%, 100% { transform: translateX(0) rotate(0); } 50% { transform: translateX(25px) rotate(8deg); } 63% { transform: translateX(8px) rotate(2deg); } }
+    @keyframes push-pulse { 0% { opacity: 0; transform: scale(.35) rotate(0); } 35% { opacity: 1; } 100% { opacity: 0; transform: scale(1.35) rotate(35deg); } }
+
     footer {
       display: flex;
       justify-content: space-between;
@@ -544,6 +700,11 @@
       .jump { margin-right: 22px; margin-left: 22px; grid-template-columns: 1fr 1fr; }
       .direction-head { grid-template-columns: 1fr; gap: 19px; }
       .copy-card { width: 44%; }
+      .continuation-head { grid-template-columns: 1fr; gap: 20px; }
+      .pendulum-lab { grid-template-columns: 1fr; }
+      .lab-visual { border-right: 0; border-bottom: 3px solid var(--ink); }
+      .swing-step:nth-child(odd) .swing-card { grid-column: 1 / span 6; }
+      .swing-step:nth-child(even) .swing-card { grid-column: 7 / span 6; }
     }
 
     @media (max-width: 680px) {
@@ -567,12 +728,34 @@
       .formula-block strong { font-size: 2.2rem; }
       .rationale { grid-template-columns: 1fr; }
       .rationale div { min-height: auto; }
+      .continuation { padding: 70px 15px 82px; }
+      .continuation h2 { font-size: clamp(3.1rem, 15vw, 5rem); }
+      .pendulum-lab { min-height: 0; }
+      .lab-visual { min-height: 640px; }
+      .lab-notebook { padding: 25px 20px 28px; }
+      .needs { grid-template-columns: 1fr 1fr; }
+      .lab-control { grid-template-columns: 66px 1fr 62px; gap: 8px; }
+      .equation-grid { grid-template-columns: 1fr; }
+      .swing-stage { top: 62px; height: calc(100svh - 62px); min-height: 580px; }
+      .swing-story, .swing-steps { height: 448svh; }
+      .swing-step { min-height: 112svh; align-items: end; padding: 57svh 14px 10vh; }
+      .swing-step:nth-child(odd) .swing-card,
+      .swing-step:nth-child(even) .swing-card { grid-column: 1 / -1; justify-self: center; }
+      .swing-card { padding: 23px 22px; }
+      .swing-card h3 { font-size: clamp(2.1rem, 11vw, 3.2rem); }
+      .room-wall-left { width: 46%; }
+      .room-wall-top, .room-wall-bottom { left: 46%; }
+      .window-frame { width: 47%; }
+      .return-clock { top: 12%; left: 6%; width: 145px; height: 62%; }
+      .swing-subject { width: 330px; height: 380px; }
+      .swing-stage[data-swing-step="0"] .swing-subject,
+      .swing-stage[data-swing-step="3"] .swing-subject { left: 72%; transform: translate(-50%, -50%) scale(.34); }
       footer { flex-direction: column; padding: 42px 20px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .ruler-pendulum, .beat-ruler span::before, .heart, .drop, .drop-ripple, .sundial-sun, .sundial-shadow, .mini-pendulum, .cycle-hand, .pulse-ring, .little-clock::before, .sync-line { animation-play-state: paused; }
+      .ruler-pendulum, .beat-ruler span::before, .heart, .drop, .drop-ripple, .sundial-sun, .sundial-shadow, .mini-pendulum, .cycle-hand, .pulse-ring, .little-clock::before, .sync-line, .lab-pendulum, .swing-rider, .pusher, .push-burst { animation-play-state: paused; }
     }
   </style>
 </head>
@@ -658,6 +841,97 @@
       </div>
     </section>
 
+    <section class="continuation" id="pendulum-closeup">
+      <div class="continuation-inner">
+        <div class="continuation-head">
+          <div><span class="option-id">SELECTED SEQUENCE · NEXT CHAPTER</span><h2>Now isolate the pendulum.</h2></div>
+          <p>The room falls away and the dependable repeat becomes one physical object. Change its length, mass, and arc to see which properties actually choose the rhythm.</p>
+        </div>
+
+        <div class="pendulum-lab">
+          <div class="lab-visual">
+            <span class="lab-visual-label">LIVE MOTION · SMALL-ANGLE MODEL</span>
+            <div class="lab-pivot"></div>
+            <div class="lab-pendulum" id="lab-pendulum"><div class="lab-bob"></div></div>
+            <div class="length-bracket" id="length-bracket"><span>L</span></div>
+            <div class="lab-trace">
+              <div class="lab-trace-head"><span>ANGULAR POSITION θ OVER TIME</span><span>ONE REPEAT IN TIME = PERIOD T</span></div>
+              <svg viewBox="0 0 520 100" role="img" aria-label="Pendulum position trace with one period marked between peaks">
+                <path class="trace-axis" d="M0 50H520" />
+                <path class="trace-wave" d="M0 50C35 3 70 3 105 50s70 47 105 0 70-47 105 0 70 47 105 0 70-47 105 0" />
+                <path class="trace-period" d="M105 9V88M315 9V88M105 82H315" />
+                <text class="trace-label" x="202" y="98">T</text>
+              </svg>
+            </div>
+          </div>
+
+          <div class="lab-notebook">
+            <p class="kicker">A repeat you can build anywhere</p>
+            <h3>Gravity provides the rhythm.</h3>
+            <p>A pendulum needs gravity, a stable support, and room to swing—but no sunlight, controlled stream, wax, or sand to consume. Its timing comes mostly from geometry.</p>
+
+            <div class="needs" aria-label="Pendulum requirements">
+              <span><b>NOT NEEDED</b>Sunlight</span>
+              <span><b>NOT NEEDED</b>Water or wax</span>
+              <span class="is-needed"><b>NEEDED</b>Gravity</span>
+              <span class="is-needed"><b>NEEDED</b>Fixed support</span>
+            </div>
+
+            <div class="lab-controls" aria-label="Pendulum variables">
+              <label class="lab-control"><span>Length L</span><input id="lab-length" type="range" min="0.35" max="1.25" step="0.005" value="0.994" /><output id="lab-length-out">0.994 m</output></label>
+              <label class="lab-control"><span>Mass m</span><input id="lab-mass" type="range" min="1" max="10" step="0.5" value="5" /><output id="lab-mass-out">5.0 kg</output></label>
+              <label class="lab-control"><span>Arc θ₀</span><input id="lab-amplitude" type="range" min="2" max="20" step="1" value="6" /><output id="lab-amplitude-out">6°</output></label>
+            </div>
+
+            <div class="equation-grid">
+              <div class="equation-cell"><small>Period</small><strong>T = 2π√(L/g)</strong><span id="lab-period-out">2.001 seconds per cycle</span></div>
+              <div class="equation-cell"><small>Frequency</small><strong>f = 1/T</strong><span id="lab-frequency-out">0.500 cycles per second</span></div>
+              <div class="equation-cell"><small>Angular frequency</small><strong>ω = √(g/L) = 2πf</strong><span id="lab-omega-out">3.140 radians per second</span></div>
+              <div class="equation-cell"><small>Position at small arcs</small><strong>θ(t) ≈ θ₀ cos(ωt)</strong><span>Arc distance along the path is s = Lθ.</span></div>
+            </div>
+
+            <div class="mass-cancel">mL²θ̈ = −mgL sinθ &nbsp;→&nbsp; θ̈ + (g/L) sinθ = 0 &nbsp;→&nbsp; MASS CANCELS</div>
+            <div class="wave-note"><b>What about wavelength λ?</b> This drawing is position changing over time, so peak-to-peak spacing is the <em>period T</em>. Wavelength describes a traveling wave repeating through space; a single pendulum instead has an arc length <em>s = Lθ</em>.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="swing-story" id="swing-story" aria-label="How a playground push explains the clock escapement">
+      <div class="swing-stage" id="swing-stage" data-swing-step="0">
+        <div class="yard-world"><div class="yard-tree"></div></div>
+        <div class="swing-subject">
+          <div class="swing-frame"><div class="swing-beam"></div></div>
+          <div class="swing-rider">
+            <div class="swing-rope swing-rope--a"></div><div class="swing-rope swing-rope--b"></div><div class="swing-seat"></div>
+            <div class="rider-head"></div><div class="rider-body"></div><div class="rider-leg rider-leg--a"></div><div class="rider-leg rider-leg--b"></div>
+          </div>
+          <div class="pusher"><div class="pusher-head"></div><div class="pusher-body"></div><div class="pusher-arm"></div><div class="pusher-leg pusher-leg--a"></div><div class="pusher-leg pusher-leg--b"></div></div>
+          <div class="push-burst"></div>
+        </div>
+        <div class="room-walls">
+          <div class="room-wall-left"></div><div class="room-wall-top"></div><div class="room-wall-right"></div><div class="room-wall-bottom"></div><div class="window-frame"></div>
+        </div>
+        <div class="room-rug"></div><div class="return-clock"></div>
+        <span class="swing-progress" id="swing-progress">01 / 04 · THE WINDOW</span>
+      </div>
+
+      <div class="swing-steps">
+        <section class="swing-step" data-swing-copy="0">
+          <article class="swing-card"><small>A clue outside the room</small><h3>Look through the window.</h3><p>The pendulum belongs to the same family as the playground swing: gravity pulls it home, and inertia carries it through.</p></article>
+        </section>
+        <section class="swing-step" data-swing-copy="1">
+          <article class="swing-card"><small>Follow the motion outside</small><h3>Every real swing gives some energy away.</h3><p>Air drag, flexing ropes, and friction at the pivot make the arc a little smaller on every pass. Left alone, the rhythm remains recognizable—but eventually becomes too faint to count.</p></article>
+        </section>
+        <section class="swing-step" data-swing-copy="2">
+          <article class="swing-card"><small>Restore what friction steals</small><h3>A well-timed push keeps the swing alive.</h3><p>The second child pushes near the same point each cycle, replacing only the energy that was lost.</p><p class="precision"><b>Length sets the period.</b> The push sustains a consistent arc so the beat does not fade; too much or poorly timed force would disturb it.</p></article>
+        </section>
+        <section class="swing-step" data-swing-copy="3">
+          <article class="swing-card"><small>Return to the room</small><h3>Inside the clock, a gear gives the tiny push.</h3><p>The escapement is the clock’s perfectly timed hand. Each released tooth gives the pendulum a small impulse, then waits for the next swing.</p></article>
+        </section>
+      </div>
+    </section>
+
     <section class="direction" id="three">
       <div class="direction-inner">
         <div class="direction-head">
@@ -722,5 +996,73 @@
   </main>
 
   <footer><strong>Pick 01–04, or combine the copy from one with the visual from another.</strong><span>This is a design study; the live chapter remains unchanged.</span></footer>
+  <script>
+    const gravity = 9.80665
+    const lengthInput = document.querySelector('#lab-length')
+    const massInput = document.querySelector('#lab-mass')
+    const amplitudeInput = document.querySelector('#lab-amplitude')
+    const pendulum = document.querySelector('#lab-pendulum')
+    const lengthBracket = document.querySelector('#length-bracket')
+
+    function updatePendulumLab() {
+      const length = Number(lengthInput.value)
+      const mass = Number(massInput.value)
+      const amplitude = Number(amplitudeInput.value)
+      const theta = amplitude * Math.PI / 180
+      const idealPeriod = 2 * Math.PI * Math.sqrt(length / gravity)
+      const correctedPeriod = idealPeriod * (1 + theta ** 2 / 16 + 11 * theta ** 4 / 3072)
+      const frequency = 1 / correctedPeriod
+      const omega = Math.sqrt(gravity / length)
+      const drawnLength = 220 + (length - .35) / .9 * 128
+      const bobScale = .78 + (mass - 1) / 9 * .28
+
+      pendulum.style.setProperty('--lab-angle', amplitude + 'deg')
+      pendulum.style.setProperty('--lab-period', correctedPeriod + 's')
+      pendulum.style.setProperty('--lab-length', drawnLength + 'px')
+      pendulum.style.setProperty('--bob-scale', bobScale)
+      lengthBracket.style.height = Math.max(210, drawnLength - 6) + 'px'
+
+      document.querySelector('#lab-length-out').textContent = length.toFixed(3) + ' m'
+      document.querySelector('#lab-mass-out').textContent = mass.toFixed(1) + ' kg'
+      document.querySelector('#lab-amplitude-out').textContent = amplitude + '°'
+      document.querySelector('#lab-period-out').textContent = idealPeriod.toFixed(3) + ' s ideal · ' + correctedPeriod.toFixed(3) + ' s at ' + amplitude + '°'
+      document.querySelector('#lab-frequency-out').textContent = frequency.toFixed(3) + ' cycles per second at the selected arc'
+      document.querySelector('#lab-omega-out').textContent = omega.toFixed(3) + ' radians per second'
+    }
+
+    ;[lengthInput, massInput, amplitudeInput].forEach((input) => input.addEventListener('input', updatePendulumLab))
+    updatePendulumLab()
+
+    const swingStage = document.querySelector('#swing-stage')
+    const swingSteps = [...document.querySelectorAll('[data-swing-copy]')]
+    const swingProgress = document.querySelector('#swing-progress')
+    const swingLabels = ['THE WINDOW', 'ENERGY FADES', 'THE PUSH', 'BACK TO THE CLOCK']
+    let swingFrame = 0
+
+    function updateSwingStory() {
+      swingFrame = 0
+      const focus = window.innerHeight * .52
+      let active = 0
+      let nearest = Infinity
+      swingSteps.forEach((step, index) => {
+        const bounds = step.getBoundingClientRect()
+        const distance = Math.abs((bounds.top + bounds.bottom) / 2 - focus)
+        if (distance < nearest) {
+          nearest = distance
+          active = index
+        }
+      })
+      swingStage.dataset.swingStep = active
+      swingProgress.textContent = String(active + 1).padStart(2, '0') + ' / 04 · ' + swingLabels[active]
+    }
+
+    function requestSwingUpdate() {
+      if (!swingFrame) swingFrame = requestAnimationFrame(updateSwingStory)
+    }
+
+    updateSwingStory()
+    window.addEventListener('scroll', requestSwingUpdate, { passive: true })
+    window.addEventListener('resize', requestSwingUpdate)
+  </script>
 </body>
 </html>
