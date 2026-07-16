@@ -664,6 +664,52 @@
     @keyframes child-push { 0%, 38%, 100% { transform: translateX(0) rotate(0); } 50% { transform: translateX(25px) rotate(8deg); } 63% { transform: translateX(8px) rotate(2deg); } }
     @keyframes push-pulse { 0% { opacity: 0; transform: scale(.35) rotate(0); } 35% { opacity: 1; } 100% { opacity: 0; transform: scale(1.35) rotate(35deg); } }
 
+    /* Selected continuation — dissipating pendulum thought experiment */
+    .dissipation {
+      scroll-margin-top: 70px;
+      padding: 112px 42px 122px;
+      color: var(--ink);
+      border-top: 7px solid var(--gold);
+      background:
+        repeating-linear-gradient(88deg, rgba(23, 57, 54, .035) 0 1px, transparent 1px 11px),
+        #ddc989;
+    }
+    .dissipation-inner { max-width: 1296px; margin: 0 auto; }
+    .dissipation-head { display: grid; grid-template-columns: 1fr minmax(320px, 440px); gap: 7vw; align-items: end; margin-bottom: 38px; }
+    .dissipation h2 { max-width: 10em; margin: 0; color: var(--ink); font: 700 clamp(3.3rem, 6vw, 6.5rem)/.85 "Iowan Old Style", Georgia, serif; letter-spacing: -.065em; }
+    .dissipation-head > div:last-child > p { margin: 0; color: #5d5647; font-size: .87rem; line-height: 1.64; }
+    .replay-button { display: inline-flex; align-items: center; gap: 9px; margin-top: 18px; padding: 11px 14px; color: #f5e9c2; border: 2px solid var(--ink); background: var(--red); font: 700 .59rem/1 ui-monospace, monospace; letter-spacing: .07em; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0 rgba(23, 57, 54, .2); }
+    .replay-button:hover { color: var(--ink); background: var(--gold); }
+
+    .decay-board { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(360px, .88fr); min-height: 680px; overflow: hidden; border: 3px solid var(--ink); background: var(--paper); box-shadow: 14px 15px 0 rgba(122, 44, 37, .17); }
+    .decay-visual { position: relative; min-height: 680px; overflow: hidden; border-right: 3px solid var(--ink); background: repeating-linear-gradient(90deg, transparent 0 18px, rgba(23, 57, 54, .08) 18px 19px), #eee3bd; }
+    .decay-visual::before { content: ''; position: absolute; right: 0; bottom: 0; left: 0; height: 22%; border-top: 5px solid var(--ink); background: repeating-linear-gradient(5deg, #a96338 0 15px, #6c3b28 15px 17px); }
+    .decay-label { position: absolute; top: 25px; left: 27px; color: var(--red); font: 700 .56rem/1 ui-monospace, monospace; letter-spacing: .09em; text-transform: uppercase; }
+    .decay-case { position: absolute; top: 7%; left: 50%; width: 390px; height: 75%; border: 8px solid var(--ink); background: rgba(132, 68, 38, .2); transform: translateX(-50%); clip-path: polygon(12% 0, 88% 0, 100% 10%, 94% 100%, 6% 100%, 0 10%); }
+    .decay-case::before { content: ''; position: absolute; top: 3%; right: 9%; left: 9%; height: 16%; border: 6px solid var(--ink); border-radius: 50% 50% 9px 9px; background: #844426; }
+    .decay-pivot { position: absolute; z-index: 5; top: 24%; left: 50%; width: 31px; aspect-ratio: 1; border: 6px solid var(--ink); border-radius: 50%; background: var(--paper); transform: translateX(-50%); }
+    .decay-pendulum { position: absolute; z-index: 4; top: calc(24% + 15px); left: 50%; width: 7px; height: 310px; border-radius: 7px; background: var(--gold); transform-origin: 50% 0; will-change: transform; }
+    .decay-bob { position: absolute; bottom: -46px; left: 50%; width: 88px; aspect-ratio: 1; border: 7px solid var(--ink); border-radius: 50%; background: var(--gold); box-shadow: inset 13px 12px rgba(255, 239, 171, .3); transform: translateX(-50%); }
+    .decay-ghosts { position: absolute; z-index: 3; top: 24%; left: 50%; width: 380px; height: 380px; border-right: 3px dashed rgba(150, 49, 44, .28); border-left: 3px dashed rgba(150, 49, 44, .28); border-radius: 50%; transform: translateX(-50%); }
+    .decay-status { position: absolute; z-index: 8; right: 5%; bottom: 5%; left: 5%; display: grid; grid-template-columns: 1fr auto; gap: 9px 20px; align-items: center; padding: 15px 17px; color: #f1e5bd; border: 3px solid var(--ink); background: var(--blue); }
+    .decay-status small { font: 700 .53rem/1 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .decay-status output { color: var(--gold); font: 700 .65rem/1 ui-monospace, monospace; }
+    .decay-meter { grid-column: 1 / -1; height: 12px; overflow: hidden; border: 2px solid #f0e1b5; background: #273e3a; }
+    .decay-meter span { display: block; width: 100%; height: 100%; background: linear-gradient(90deg, var(--red), var(--gold)); transform-origin: left; will-change: transform; }
+
+    .loss-notes { display: flex; flex-direction: column; padding: clamp(27px, 3vw, 43px); background: repeating-linear-gradient(0deg, transparent 0 27px, rgba(23, 57, 54, .055) 27px 28px), #f4eaca; }
+    .loss-notes h3 { margin: 0; color: var(--ink); font: 700 clamp(2.1rem, 3.5vw, 3.6rem)/.92 "Iowan Old Style", Georgia, serif; letter-spacing: -.05em; }
+    .loss-notes > p { margin: 15px 0 22px; color: #554f42; font-size: .79rem; line-height: 1.56; }
+    .loss-list { display: grid; gap: 2px; background: var(--ink); border: 2px solid var(--ink); }
+    .loss-item { min-height: 91px; display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 14px; padding: 13px 15px; background: #e8d9a6; }
+    .loss-item:nth-child(even) { background: #d9c886; }
+    .loss-icon { position: relative; width: 58px; height: 58px; display: grid; place-items: center; color: var(--red); border: 2px solid var(--ink); background: var(--paper); font: 700 1.4rem/1 Georgia, serif; }
+    .loss-item small { display: block; margin-bottom: 5px; color: var(--red); font: 700 .5rem/1 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .loss-item b { display: block; color: var(--ink); font: 700 1.02rem/1.1 Georgia, serif; }
+    .loss-item p { margin: 4px 0 0; color: #6a624f; font-size: .65rem; line-height: 1.4; }
+    .decay-takeaway { margin-top: auto; padding: 15px 17px; color: #f3e6bb; background: var(--red); font-size: .7rem; line-height: 1.5; }
+    .decay-takeaway b { color: #fff3cb; }
+
     footer {
       display: flex;
       justify-content: space-between;
@@ -705,6 +751,9 @@
       .lab-visual { border-right: 0; border-bottom: 3px solid var(--ink); }
       .swing-step:nth-child(odd) .swing-card { grid-column: 1 / span 6; }
       .swing-step:nth-child(even) .swing-card { grid-column: 7 / span 6; }
+      .dissipation-head { grid-template-columns: 1fr; gap: 20px; }
+      .decay-board { grid-template-columns: 1fr; }
+      .decay-visual { border-right: 0; border-bottom: 3px solid var(--ink); }
     }
 
     @media (max-width: 680px) {
@@ -750,6 +799,13 @@
       .swing-subject { width: 330px; height: 380px; }
       .swing-stage[data-swing-step="0"] .swing-subject,
       .swing-stage[data-swing-step="3"] .swing-subject { left: 72%; transform: translate(-50%, -50%) scale(.34); }
+      .dissipation { padding: 74px 15px 88px; }
+      .dissipation h2 { font-size: clamp(3rem, 14.5vw, 5rem); }
+      .decay-visual { min-height: 620px; }
+      .decay-case { width: 310px; }
+      .decay-pendulum { height: 276px; }
+      .decay-ghosts { width: 300px; height: 340px; }
+      .loss-notes { padding: 26px 20px 29px; }
       footer { flex-direction: column; padding: 42px 20px; }
     }
 
@@ -932,6 +988,42 @@
       </div>
     </section>
 
+    <section class="dissipation" id="dissipation">
+      <div class="dissipation-inner">
+        <div class="dissipation-head">
+          <div><span class="option-id">THOUGHT EXPERIMENT · REMOVE THE PUSH</span><h2>Doesn’t every pendulum eventually stop?</h2></div>
+          <div><p>Yes. Let this one go and watch where its motion goes. The beat does not suddenly choose a new period; its arc loses energy until there is too little motion left to serve as a clock.</p><button class="replay-button" id="decay-replay" type="button"><span>↻</span> Release it again</button></div>
+        </div>
+
+        <div class="decay-board" id="decay-board">
+          <div class="decay-visual">
+            <span class="decay-label">NO IMPULSE · DAMPED MOTION</span>
+            <div class="decay-case"></div>
+            <div class="decay-ghosts"></div>
+            <div class="decay-pivot"></div>
+            <div class="decay-pendulum" id="decay-pendulum"><div class="decay-bob"></div></div>
+            <div class="decay-status">
+              <small>Mechanical energy remaining</small><output id="decay-energy-out">100%</output>
+              <div class="decay-meter"><span id="decay-meter-fill"></span></div>
+            </div>
+          </div>
+
+          <div class="loss-notes">
+            <p class="kicker">Where the motion goes</p>
+            <h3>Each cycle leaks a little energy.</h3>
+            <p>The energy is not destroyed. It disperses into the room as tiny air currents, heat, sound, and movement in the clock’s structure.</p>
+            <div class="loss-list">
+              <div class="loss-item"><div class="loss-icon">≈</div><div><small>01 · Through the air</small><b>Air drag</b><p>The bob pushes air aside and leaves faint turbulence behind it.</p></div></div>
+              <div class="loss-item"><div class="loss-icon">◉</div><div><small>02 · At the suspension</small><b>Pivot friction</b><p>Contact at the bearing turns a little organized motion into heat.</p></div></div>
+              <div class="loss-item"><div class="loss-icon">∿</div><div><small>03 · Inside the material</small><b>Flex and internal damping</b><p>The rod, spring, and support deform microscopically on every pass.</p></div></div>
+              <div class="loss-item"><div class="loss-icon">⚙</div><div><small>04 · Into the mechanism</small><b>Mechanical load</b><p>Moving the escapement and gear train also asks the pendulum for energy.</p></div></div>
+            </div>
+            <div class="decay-takeaway"><b>Notice the subtlety:</b> the swings become smaller before the timing changes very much. A clock needs an impulse mainly to preserve a clear, consistent arc—not to invent the period.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="direction" id="three">
       <div class="direction-inner">
         <div class="direction-head">
@@ -1063,6 +1155,52 @@
     updateSwingStory()
     window.addEventListener('scroll', requestSwingUpdate, { passive: true })
     window.addEventListener('resize', requestSwingUpdate)
+
+    const decayBoard = document.querySelector('#decay-board')
+    const decayPendulum = document.querySelector('#decay-pendulum')
+    const decayMeter = document.querySelector('#decay-meter-fill')
+    const decayEnergyOutput = document.querySelector('#decay-energy-out')
+    const decayReplay = document.querySelector('#decay-replay')
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let decayAnimation = 0
+    let decayStarted = false
+
+    function setDecayFrame(angle, energy) {
+      decayPendulum.style.transform = 'rotate(' + angle + 'deg)'
+      decayMeter.style.transform = 'scaleX(' + energy + ')'
+      decayEnergyOutput.textContent = Math.max(0, Math.round(energy * 100)) + '%'
+    }
+
+    function runDecay() {
+      cancelAnimationFrame(decayAnimation)
+      decayStarted = true
+      if (reducedMotion.matches) {
+        setDecayFrame(0, .08)
+        return
+      }
+      const start = performance.now()
+      const startingAngle = 18
+      const damping = .22
+      const angularFrequency = Math.PI
+
+      function frame(now) {
+        const elapsed = (now - start) / 1000
+        const envelope = Math.exp(-damping * elapsed)
+        const energy = Math.exp(-2 * damping * elapsed)
+        const angle = startingAngle * envelope * Math.cos(angularFrequency * elapsed)
+        setDecayFrame(angle, energy)
+        if (elapsed < 14) decayAnimation = requestAnimationFrame(frame)
+        else setDecayFrame(0, 0)
+      }
+
+      decayAnimation = requestAnimationFrame(frame)
+    }
+
+    decayReplay.addEventListener('click', runDecay)
+    const decayObserver = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting) && !decayStarted) runDecay()
+    }, { threshold: .45 })
+    decayObserver.observe(decayBoard)
   </script>
 </body>
 </html>
