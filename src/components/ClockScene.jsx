@@ -4,20 +4,20 @@ import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { pendulumPeriod } from '../physics.js'
 
-const WOOD = '#c96f55'
-const WOOD_DARK = '#7c4438'
-const WOOD_LIGHT = '#e99d76'
-const BRASS = '#d49b47'
-const BRASS_LIGHT = '#f2c66d'
-const INK = '#322b27'
-const CREAM = '#f7eddb'
+const WOOD = '#7a3f27'
+const WOOD_DARK = '#351c17'
+const WOOD_LIGHT = '#ac6b3c'
+const BRASS = '#b98a36'
+const BRASS_LIGHT = '#e0b957'
+const INK = '#1f2928'
+const CREAM = '#f0e3bd'
 
 function WoodMaterial({ opacity = 1, color = WOOD, roughness = 0.48 }) {
   return (
     <meshStandardMaterial
       color={color}
-      roughness={Math.max(0.64, roughness)}
-      metalness={0}
+      roughness={Math.max(0.5, roughness)}
+      metalness={0.03}
       transparent={opacity < 1}
       opacity={opacity}
       depthWrite={opacity > 0.35}
@@ -29,10 +29,10 @@ function BrassMaterial({ glow = false, opacity = 1 }) {
   return (
     <meshStandardMaterial
       color={glow ? BRASS_LIGHT : BRASS}
-      emissive={glow ? '#8f5b19' : '#000000'}
-      emissiveIntensity={glow ? 0.22 : 0}
-      metalness={0.18}
-      roughness={0.42}
+      emissive={glow ? '#6f4811' : '#000000'}
+      emissiveIntensity={glow ? 0.28 : 0}
+      metalness={0.46}
+      roughness={0.34}
       transparent={opacity < 1}
       opacity={opacity}
     />
@@ -44,16 +44,16 @@ function Gear({ radius = 0.4, teeth = 24, width = 0.09, color = BRASS, ...props 
     <group {...props}>
       <mesh>
         <torusGeometry args={[radius * 0.73, radius * 0.12, 8, 40]} />
-        <meshStandardMaterial color={color} metalness={0.14} roughness={0.46} />
+        <meshStandardMaterial color={color} metalness={0.42} roughness={0.36} />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[radius * 0.15, radius * 0.15, width * 1.4, 18]} />
-        <meshStandardMaterial color={color} metalness={0.16} roughness={0.44} />
+        <meshStandardMaterial color={color} metalness={0.45} roughness={0.34} />
       </mesh>
       {Array.from({ length: 6 }, (_, index) => (
         <mesh key={index} rotation={[0, 0, index * Math.PI / 3]} position={[0, 0, 0]}>
           <boxGeometry args={[radius * 1.45, radius * 0.075, width]} />
-          <meshStandardMaterial color={color} metalness={0.14} roughness={0.46} />
+          <meshStandardMaterial color={color} metalness={0.42} roughness={0.36} />
         </mesh>
       ))}
       {Array.from({ length: teeth }, (_, index) => {
@@ -65,7 +65,7 @@ function Gear({ radius = 0.4, teeth = 24, width = 0.09, color = BRASS, ...props 
             rotation={[0, 0, angle]}
           >
             <boxGeometry args={[radius * 0.2, radius * 0.075, width]} />
-            <meshStandardMaterial color={color} metalness={0.14} roughness={0.46} />
+            <meshStandardMaterial color={color} metalness={0.42} roughness={0.36} />
           </mesh>
         )
       })}
@@ -123,7 +123,7 @@ function Dial({ opacity = 1 }) {
       </mesh>
       <mesh position={[0, 0, 0.052]}>
         <torusGeometry args={[0.91, 0.028, 10, 64]} />
-        <meshStandardMaterial color={BRASS} metalness={0.15} roughness={0.44} transparent opacity={opacity} />
+        <meshStandardMaterial color={BRASS} metalness={0.44} roughness={0.34} transparent opacity={opacity} />
       </mesh>
       {Array.from({ length: 60 }, (_, index) => {
         const angle = index / 60 * Math.PI * 2
@@ -165,7 +165,7 @@ function Weight({ x, height, glow = false, scale = 1 }) {
     <group position={[x, 0, 0.16]} scale={scale}>
       <mesh position={[0, (y + 0.65) / 2, 0]}>
         <cylinderGeometry args={[0.012, 0.012, 2.6 - y, 8]} />
-        <meshStandardMaterial color="#8a7157" metalness={0.05} roughness={0.58} />
+        <meshStandardMaterial color="#746047" metalness={0.28} roughness={0.46} />
       </mesh>
       <mesh position={[0, y, 0]} castShadow>
         <cylinderGeometry args={[0.18, 0.2, 0.68, 28]} />
@@ -311,12 +311,6 @@ function ClockModel({ active, amplitude, length, weightHeight }) {
 
   return (
     <group ref={rootRef} position={[0, -0.05, 0]} scale={0.92}>
-      <RoundedBox args={[4.75, 0.24, 3.5]} radius={0.2} position={[0, -3.36, 0.02]} receiveShadow castShadow>
-        <meshStandardMaterial color="#ddd0c2" roughness={0.86} />
-      </RoundedBox>
-      <RoundedBox args={[4.3, 0.18, 3.05]} radius={0.16} position={[0, -3.19, 0.02]} receiveShadow>
-        <meshStandardMaterial color="#f3e9df" roughness={0.9} />
-      </RoundedBox>
       <ClockCase opacity={caseOpacity} />
       <Dial opacity={isolatePendulum ? 0.06 : active === 6 || active === 7 || active === 8 ? 0.2 : 1} />
       <group position={[0, 0.67, 0.28]}>
@@ -479,6 +473,314 @@ function EscapementStudy({ visible, amplitude, length }) {
   )
 }
 
+function useRoomTextures() {
+  return useMemo(() => {
+    const makeCanvas = (size, background) => {
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const context = canvas.getContext('2d')
+      context.fillStyle = background
+      context.fillRect(0, 0, size, size)
+      return { canvas, context }
+    }
+
+    const wallpaperCanvas = makeCanvas(320, '#e9dfbd')
+    const wallpaperContext = wallpaperCanvas.context
+    wallpaperContext.strokeStyle = 'rgba(36, 52, 48, .34)'
+    wallpaperContext.lineWidth = 1.2
+    for (let x = 6; x < 320; x += 12) {
+      wallpaperContext.beginPath()
+      for (let y = 0; y <= 320; y += 5) {
+        const wave = Math.sin(y * 0.075 + x) * 1.8
+        if (y === 0) wallpaperContext.moveTo(x + wave, y)
+        else wallpaperContext.lineTo(x + wave, y)
+      }
+      wallpaperContext.stroke()
+    }
+    for (let x = 32; x < 320; x += 80) {
+      for (let y = 34; y < 320; y += 82) {
+        wallpaperContext.strokeStyle = 'rgba(126, 43, 34, .34)'
+        wallpaperContext.beginPath()
+        wallpaperContext.arc(x, y, 8, 0, Math.PI * 2)
+        wallpaperContext.arc(x - 7, y + 4, 5, 0, Math.PI * 2)
+        wallpaperContext.arc(x + 7, y + 4, 5, 0, Math.PI * 2)
+        wallpaperContext.stroke()
+      }
+    }
+    const wallpaper = new THREE.CanvasTexture(wallpaperCanvas.canvas)
+    wallpaper.wrapS = wallpaper.wrapT = THREE.RepeatWrapping
+    wallpaper.repeat.set(5.5, 3.4)
+    wallpaper.colorSpace = THREE.SRGBColorSpace
+
+    const floorCanvas = makeCanvas(256, '#9a5a2f')
+    const floorContext = floorCanvas.context
+    for (let y = 0; y < 256; y += 32) {
+      floorContext.fillStyle = y % 64 === 0 ? '#9a5a2f' : '#a86536'
+      floorContext.fillRect(0, y, 256, 31)
+      floorContext.strokeStyle = '#63351f'
+      floorContext.lineWidth = 2
+      floorContext.beginPath()
+      floorContext.moveTo(0, y + 31)
+      floorContext.lineTo(256, y + 31)
+      floorContext.stroke()
+      floorContext.strokeStyle = 'rgba(48, 26, 18, .28)'
+      floorContext.lineWidth = 1
+      for (let x = 0; x < 256; x += 36) {
+        floorContext.beginPath()
+        floorContext.moveTo(x, y + 7 + Math.sin(x + y) * 3)
+        floorContext.bezierCurveTo(x + 14, y + 3, x + 22, y + 17, x + 34, y + 11)
+        floorContext.stroke()
+      }
+    }
+    const floor = new THREE.CanvasTexture(floorCanvas.canvas)
+    floor.wrapS = floor.wrapT = THREE.RepeatWrapping
+    floor.repeat.set(5, 5)
+    floor.colorSpace = THREE.SRGBColorSpace
+
+    const rugCanvas = makeCanvas(512, '#8f201f')
+    const rugContext = rugCanvas.context
+    rugContext.fillStyle = '#102f3a'
+    rugContext.fillRect(0, 0, 512, 54)
+    rugContext.fillRect(0, 458, 512, 54)
+    rugContext.fillRect(0, 0, 54, 512)
+    rugContext.fillRect(458, 0, 54, 512)
+    rugContext.strokeStyle = '#e6aa3c'
+    rugContext.lineWidth = 7
+    rugContext.strokeRect(66, 66, 380, 380)
+    rugContext.strokeStyle = '#e7d69e'
+    rugContext.lineWidth = 3
+    rugContext.strokeRect(24, 24, 464, 464)
+    const motifColors = ['#0d5360', '#e2a43d', '#d9d2a2', '#1f4033']
+    for (let y = 88; y <= 424; y += 56) {
+      for (let x = 88; x <= 424; x += 56) {
+        const color = motifColors[(x / 56 + y / 56) % motifColors.length]
+        rugContext.save()
+        rugContext.translate(x, y)
+        rugContext.rotate(Math.PI / 4)
+        rugContext.fillStyle = color
+        rugContext.fillRect(-10, -10, 20, 20)
+        rugContext.strokeStyle = '#351f1b'
+        rugContext.lineWidth = 2
+        rugContext.strokeRect(-10, -10, 20, 20)
+        rugContext.restore()
+      }
+    }
+    const starPath = (cx, cy, outer, inner, points = 12) => {
+      rugContext.beginPath()
+      for (let index = 0; index < points * 2; index += 1) {
+        const radius = index % 2 === 0 ? outer : inner
+        const angle = -Math.PI / 2 + index * Math.PI / points
+        const x = cx + Math.cos(angle) * radius
+        const y = cy + Math.sin(angle) * radius
+        if (index === 0) rugContext.moveTo(x, y)
+        else rugContext.lineTo(x, y)
+      }
+      rugContext.closePath()
+    }
+    for (let index = 0; index < 18; index += 1) {
+      const along = 44 + index * 25
+      rugContext.fillStyle = index % 2 ? '#dba33d' : '#d8d19f'
+      rugContext.beginPath()
+      rugContext.arc(along, 27, 5, 0, Math.PI * 2)
+      rugContext.arc(along, 485, 5, 0, Math.PI * 2)
+      rugContext.fill()
+      rugContext.beginPath()
+      rugContext.arc(27, along, 5, 0, Math.PI * 2)
+      rugContext.arc(485, along, 5, 0, Math.PI * 2)
+      rugContext.fill()
+    }
+    ;[[116, 116], [396, 116], [116, 396], [396, 396]].forEach(([x, y]) => {
+      starPath(x, y, 31, 16, 8)
+      rugContext.fillStyle = '#d8a03a'
+      rugContext.fill()
+      rugContext.strokeStyle = '#163f47'
+      rugContext.lineWidth = 4
+      rugContext.stroke()
+      rugContext.fillStyle = '#e9d89d'
+      rugContext.beginPath()
+      rugContext.arc(x, y, 7, 0, Math.PI * 2)
+      rugContext.fill()
+    })
+    starPath(256, 256, 126, 82, 16)
+    rugContext.fillStyle = '#d5a03a'
+    rugContext.fill()
+    rugContext.strokeStyle = '#e8d89e'
+    rugContext.lineWidth = 7
+    rugContext.stroke()
+    starPath(256, 256, 93, 59, 12)
+    rugContext.fillStyle = '#123e47'
+    rugContext.fill()
+    rugContext.strokeStyle = '#2b1f1a'
+    rugContext.lineWidth = 4
+    rugContext.stroke()
+    starPath(256, 256, 55, 30, 10)
+    rugContext.fillStyle = '#a52b29'
+    rugContext.fill()
+    rugContext.strokeStyle = '#e7d69e'
+    rugContext.lineWidth = 4
+    rugContext.stroke()
+    rugContext.fillStyle = '#d8a23d'
+    rugContext.beginPath()
+    rugContext.arc(256, 256, 13, 0, Math.PI * 2)
+    rugContext.fill()
+    const rug = new THREE.CanvasTexture(rugCanvas.canvas)
+    rug.colorSpace = THREE.SRGBColorSpace
+
+    return { floor, rug, wallpaper }
+  }, [])
+}
+
+function Bookcase() {
+  const bookColors = ['#193c42', '#912e27', '#c18b33', '#e0c980', '#2f5960', '#6e3829']
+  return (
+    <group position={[-4.2, -1.28, -2.05]}>
+      <mesh position={[0, 0, -0.1]} castShadow>
+        <boxGeometry args={[1.72, 4.15, 0.38]} />
+        <WoodMaterial color="#4b291f" />
+      </mesh>
+      {[-1.78, -0.9, -0.02, 0.86, 1.74].map((y) => (
+        <mesh key={y} position={[0, y, 0.17]} castShadow>
+          <boxGeometry args={[1.82, 0.13, 0.56]} />
+          <WoodMaterial color={WOOD_LIGHT} />
+        </mesh>
+      ))}
+      {Array.from({ length: 24 }, (_, index) => {
+        const shelf = Math.floor(index / 6)
+        const slot = index % 6
+        const height = 0.45 + ((index * 7) % 5) * 0.055
+        return (
+          <mesh key={index} position={[-0.64 + slot * 0.255, -1.42 + shelf * 0.88 + height / 2, 0.38]}>
+            <boxGeometry args={[0.19, height, 0.28 + (index % 2) * 0.04]} />
+            <meshStandardMaterial color={bookColors[index % bookColors.length]} roughness={0.76} />
+          </mesh>
+        )
+      })}
+    </group>
+  )
+}
+
+function LoungeChair() {
+  return (
+    <group position={[3.65, -2.64, -0.7]} rotation={[0, -0.42, 0]}>
+      <RoundedBox args={[1.65, 0.45, 1.55]} radius={0.18} position={[0, 0.32, 0]} castShadow>
+        <meshStandardMaterial color="#173a42" roughness={0.82} />
+      </RoundedBox>
+      <RoundedBox args={[1.65, 1.72, 0.38]} radius={0.18} position={[0, 1.23, -0.56]} rotation={[-0.12, 0, 0]} castShadow>
+        <meshStandardMaterial color="#173a42" roughness={0.82} />
+      </RoundedBox>
+      {[-0.92, 0.92].map((x) => (
+        <RoundedBox key={x} args={[0.28, 0.62, 1.55]} radius={0.12} position={[x, 0.58, 0]} castShadow>
+          <meshStandardMaterial color="#173a42" roughness={0.82} />
+        </RoundedBox>
+      ))}
+      {[-0.64, 0.64].map((x) => (
+        <mesh key={x} position={[x, -0.13, 0.45]}>
+          <cylinderGeometry args={[0.06, 0.08, 0.55, 10]} />
+          <WoodMaterial color={WOOD_DARK} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+function HousePlant() {
+  const leaves = [
+    [-0.48, 0.65, 0, -0.45], [0.42, 0.73, 0.08, 0.48], [-0.22, 1.12, 0.1, -0.2],
+    [0.35, 1.32, -0.04, 0.32], [-0.5, 1.55, 0.03, -0.56], [0.05, 1.82, 0.08, 0.08],
+    [0.5, 1.72, 0, 0.55], [-0.3, 2.05, -0.04, -0.28], [0.25, 2.18, 0.05, 0.28],
+  ]
+  return (
+    <group position={[3.95, -3.02, -2.0]}>
+      <mesh position={[0, 0.25, 0]} castShadow>
+        <cylinderGeometry args={[0.42, 0.32, 0.72, 20]} />
+        <meshStandardMaterial color="#a62f28" roughness={0.72} />
+      </mesh>
+      <mesh position={[0, 1.3, 0]}>
+        <cylinderGeometry args={[0.035, 0.05, 2.2, 10]} />
+        <meshStandardMaterial color="#3f4d2a" roughness={0.75} />
+      </mesh>
+      {leaves.map(([x, y, z, rotation], index) => (
+        <mesh key={index} position={[x, y, z]} rotation={[0, 0, rotation]} scale={[1.5, 0.58, 0.45]} castShadow>
+          <sphereGeometry args={[0.38, 16, 10]} />
+          <meshStandardMaterial color={index % 3 === 0 ? '#244d3a' : '#356143'} roughness={0.82} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+function FloorLamp() {
+  return (
+    <group position={[2.55, -2.38, -2.15]}>
+      <mesh position={[0, 1.5, 0]}>
+        <cylinderGeometry args={[0.025, 0.035, 3.1, 10]} />
+        <meshStandardMaterial color="#2a211c" metalness={0.25} roughness={0.45} />
+      </mesh>
+      <mesh position={[0, 3.03, 0]}>
+        <coneGeometry args={[0.62, 0.72, 24, 1, true]} />
+        <meshStandardMaterial color="#c59a37" side={THREE.DoubleSide} roughness={0.7} />
+      </mesh>
+      <pointLight position={[0, 2.82, 0]} intensity={0.72} distance={5.5} color="#ffd485" />
+    </group>
+  )
+}
+
+function FramedArt({ position, size = [1.3, 1.75], color = '#123b45' }) {
+  return (
+    <group position={position}>
+      <mesh>
+        <boxGeometry args={[size[0] + 0.16, size[1] + 0.16, 0.12]} />
+        <WoodMaterial color="#6c3a23" />
+      </mesh>
+      <mesh position={[0, 0, 0.075]}>
+        <planeGeometry args={size} />
+        <meshStandardMaterial color={color} roughness={0.8} />
+      </mesh>
+      {Array.from({ length: 9 }, (_, index) => {
+        const x = ((index * 37) % 100) / 100 * size[0] - size[0] / 2
+        const y = ((index * 61) % 100) / 100 * size[1] - size[1] / 2
+        return (
+          <mesh key={index} position={[x, y, 0.085]} rotation={[0, 0, index * 0.7]}>
+            <torusGeometry args={[0.09 + (index % 3) * 0.03, 0.018, 6, 18]} />
+            <meshStandardMaterial color={index % 2 ? '#d6a13d' : '#a62f2b'} />
+          </mesh>
+        )
+      })}
+    </group>
+  )
+}
+
+function CozyRoom() {
+  const textures = useRoomTextures()
+  return (
+    <group>
+      <mesh position={[0, 0.3, -2.58]} receiveShadow>
+        <planeGeometry args={[13.5, 8.1]} />
+        <meshStandardMaterial map={textures.wallpaper} roughness={0.96} />
+      </mesh>
+      <mesh position={[0, -3.5, 0.65]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[14, 8.2]} />
+        <meshStandardMaterial map={textures.floor} roughness={0.74} />
+      </mesh>
+      <mesh position={[0.35, -3.47, 0.8]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[7.3, 4.4]} />
+        <meshStandardMaterial map={textures.rug} roughness={0.92} />
+      </mesh>
+      <Bookcase />
+      <LoungeChair />
+      <HousePlant />
+      <FloorLamp />
+      <FramedArt position={[-2.55, 1.15, -2.48]} color="#153e48" />
+      <FramedArt position={[3.5, 1.25, -2.48]} size={[1.05, 1.35]} color="#772722" />
+      <mesh position={[0, 2.9, -2.48]}>
+        <boxGeometry args={[1.8, 0.08, 0.12]} />
+        <WoodMaterial color={WOOD_DARK} />
+      </mesh>
+    </group>
+  )
+}
+
 function Scene({ active, amplitude, length, weightHeight }) {
   const { camera, size } = useThree()
   useFrame(() => {
@@ -498,11 +800,12 @@ function Scene({ active, amplitude, length, weightHeight }) {
       <directionalLight position={[-5, 10, 8]} intensity={3.1} color="#fff2df" castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0002} />
       <directionalLight position={[7, 5, -3]} intensity={1.45} color="#c9d7dc" />
       <pointLight position={[1, 1, 5]} intensity={0.8} color="#ffd9a0" />
+      <CozyRoom />
       <ClockModel active={active} amplitude={amplitude} length={length} weightHeight={weightHeight} />
       <Timekeepers visible={active === 1} />
       <FrequencyField visible={active === 2} />
       <EscapementStudy visible={active === 6} amplitude={amplitude} length={length} />
-      <ContactShadows position={[0, -3.48, 0]} opacity={0.28} scale={9} blur={3.3} far={5} color="#766256" />
+      <ContactShadows position={[0, -3.49, 0]} opacity={0.34} scale={10} blur={2.8} far={5} color="#33211a" />
     </>
   )
 }
