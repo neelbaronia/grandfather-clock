@@ -4,20 +4,20 @@ import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { pendulumPeriod } from '../physics.js'
 
-const WOOD = '#5c2f1d'
-const WOOD_DARK = '#2b1711'
-const WOOD_LIGHT = '#875139'
-const BRASS = '#c8a55c'
-const BRASS_LIGHT = '#f1d994'
-const INK = '#231f19'
-const CREAM = '#e9dfc5'
+const WOOD = '#c96f55'
+const WOOD_DARK = '#7c4438'
+const WOOD_LIGHT = '#e99d76'
+const BRASS = '#d49b47'
+const BRASS_LIGHT = '#f2c66d'
+const INK = '#322b27'
+const CREAM = '#f7eddb'
 
 function WoodMaterial({ opacity = 1, color = WOOD, roughness = 0.48 }) {
   return (
     <meshStandardMaterial
       color={color}
-      roughness={roughness}
-      metalness={0.04}
+      roughness={Math.max(0.64, roughness)}
+      metalness={0}
       transparent={opacity < 1}
       opacity={opacity}
       depthWrite={opacity > 0.35}
@@ -29,10 +29,10 @@ function BrassMaterial({ glow = false, opacity = 1 }) {
   return (
     <meshStandardMaterial
       color={glow ? BRASS_LIGHT : BRASS}
-      emissive={glow ? '#6b4611' : '#000000'}
-      emissiveIntensity={glow ? 0.45 : 0}
-      metalness={0.78}
-      roughness={0.24}
+      emissive={glow ? '#8f5b19' : '#000000'}
+      emissiveIntensity={glow ? 0.22 : 0}
+      metalness={0.18}
+      roughness={0.42}
       transparent={opacity < 1}
       opacity={opacity}
     />
@@ -44,16 +44,16 @@ function Gear({ radius = 0.4, teeth = 24, width = 0.09, color = BRASS, ...props 
     <group {...props}>
       <mesh>
         <torusGeometry args={[radius * 0.73, radius * 0.12, 8, 40]} />
-        <meshStandardMaterial color={color} metalness={0.72} roughness={0.28} />
+        <meshStandardMaterial color={color} metalness={0.14} roughness={0.46} />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[radius * 0.15, radius * 0.15, width * 1.4, 18]} />
-        <meshStandardMaterial color={color} metalness={0.76} roughness={0.25} />
+        <meshStandardMaterial color={color} metalness={0.16} roughness={0.44} />
       </mesh>
       {Array.from({ length: 6 }, (_, index) => (
         <mesh key={index} rotation={[0, 0, index * Math.PI / 3]} position={[0, 0, 0]}>
           <boxGeometry args={[radius * 1.45, radius * 0.075, width]} />
-          <meshStandardMaterial color={color} metalness={0.72} roughness={0.28} />
+          <meshStandardMaterial color={color} metalness={0.14} roughness={0.46} />
         </mesh>
       ))}
       {Array.from({ length: teeth }, (_, index) => {
@@ -65,7 +65,7 @@ function Gear({ radius = 0.4, teeth = 24, width = 0.09, color = BRASS, ...props 
             rotation={[0, 0, angle]}
           >
             <boxGeometry args={[radius * 0.2, radius * 0.075, width]} />
-            <meshStandardMaterial color={color} metalness={0.72} roughness={0.28} />
+            <meshStandardMaterial color={color} metalness={0.14} roughness={0.46} />
           </mesh>
         )
       })}
@@ -119,11 +119,11 @@ function Dial({ opacity = 1 }) {
     <group position={[0, 1.7, 0.56]}>
       <mesh rotation={[Math.PI / 2, 0, 0]} receiveShadow>
         <cylinderGeometry args={[1.01, 1.01, 0.08, 64]} />
-        <meshStandardMaterial color={CREAM} roughness={0.64} transparent opacity={opacity} />
+        <meshStandardMaterial color={CREAM} roughness={0.78} transparent opacity={opacity} />
       </mesh>
       <mesh position={[0, 0, 0.052]}>
         <torusGeometry args={[0.91, 0.028, 10, 64]} />
-        <meshStandardMaterial color={BRASS} metalness={0.7} roughness={0.26} transparent opacity={opacity} />
+        <meshStandardMaterial color={BRASS} metalness={0.15} roughness={0.44} transparent opacity={opacity} />
       </mesh>
       {Array.from({ length: 60 }, (_, index) => {
         const angle = index / 60 * Math.PI * 2
@@ -165,7 +165,7 @@ function Weight({ x, height, glow = false, scale = 1 }) {
     <group position={[x, 0, 0.16]} scale={scale}>
       <mesh position={[0, (y + 0.65) / 2, 0]}>
         <cylinderGeometry args={[0.012, 0.012, 2.6 - y, 8]} />
-        <meshStandardMaterial color="#76664c" metalness={0.42} roughness={0.46} />
+        <meshStandardMaterial color="#8a7157" metalness={0.05} roughness={0.58} />
       </mesh>
       <mesh position={[0, y, 0]} castShadow>
         <cylinderGeometry args={[0.18, 0.2, 0.68, 28]} />
@@ -223,10 +223,15 @@ function ClockCase({ opacity = 1 }) {
       <RoundedBox args={[2.95, 2.34, 1.02]} radius={0.16} position={[0, 1.74, -0.02]} castShadow>
         <WoodMaterial opacity={opacity} />
       </RoundedBox>
-      <mesh position={[0, 2.85, -0.02]} rotation={[0, 0, Math.PI / 4]}>
-        <boxGeometry args={[2.1, 2.1, 0.98]} />
+      <RoundedBox args={[2.72, 0.4, 1.08]} radius={0.1} position={[0, 2.82, -0.02]} castShadow>
+        <WoodMaterial opacity={opacity} color={WOOD_DARK} />
+      </RoundedBox>
+      <RoundedBox args={[2.28, 0.34, 0.98]} radius={0.09} position={[0, 3.12, -0.02]} castShadow>
         <WoodMaterial opacity={opacity} />
-      </mesh>
+      </RoundedBox>
+      <RoundedBox args={[1.66, 0.25, 0.86]} radius={0.08} position={[0, 3.36, -0.02]} castShadow>
+        <WoodMaterial opacity={opacity} color={WOOD_LIGHT} />
+      </RoundedBox>
       <mesh position={[0, 1.73, 0.53]}>
         <torusGeometry args={[1.12, 0.12, 12, 64]} />
         <WoodMaterial opacity={opacity} color={WOOD_DARK} />
@@ -234,9 +239,9 @@ function ClockCase({ opacity = 1 }) {
       <mesh position={[0, -0.9, 0.44]}>
         <boxGeometry args={[1.84, 3.18, 0.045]} />
         <meshPhysicalMaterial
-          color="#adc2bd"
-          roughness={0.08}
-          transmission={0.78}
+          color="#d7e4df"
+          roughness={0.14}
+          transmission={0.7}
           transparent
           opacity={0.2 * opacity}
           thickness={0.05}
@@ -287,11 +292,14 @@ function ClockModel({ active, amplitude, length, weightHeight }) {
   const rootRef = useRef()
   const { size } = useThree()
   const isMobile = size.width < 760
-  const caseOpacity = active <= 2 ? 0.06 : active === 3 || active === 4 ? 0.09
+  const caseOpacity = active === 0 ? (isMobile ? 0.22 : 1) : active <= 2 ? 0.06 : active === 3 || active === 4 ? 0.09
     : active === 6 || active === 7 || active === 8 ? 0.22 : 1
   const focused = active >= 3 && active <= 8
+  const isolatePendulum = active === 3 || active === 4
   const rightHandChapter = [2, 4, 6, 8].includes(active)
-  const xTarget = focused ? (isMobile ? 0.35 : (rightHandChapter ? -1.22 : 1.22)) : 0
+  const xTarget = active === 0
+    ? (isMobile ? 0.2 : 1.05)
+    : focused ? (isMobile ? 0.35 : (rightHandChapter ? -1.22 : 1.22)) : 0
 
   useFrame(() => {
     if (!rootRef.current) return
@@ -303,15 +311,21 @@ function ClockModel({ active, amplitude, length, weightHeight }) {
 
   return (
     <group ref={rootRef} position={[0, -0.05, 0]} scale={0.92}>
+      <RoundedBox args={[4.75, 0.24, 3.5]} radius={0.2} position={[0, -3.36, 0.02]} receiveShadow castShadow>
+        <meshStandardMaterial color="#ddd0c2" roughness={0.86} />
+      </RoundedBox>
+      <RoundedBox args={[4.3, 0.18, 3.05]} radius={0.16} position={[0, -3.19, 0.02]} receiveShadow>
+        <meshStandardMaterial color="#f3e9df" roughness={0.9} />
+      </RoundedBox>
       <ClockCase opacity={caseOpacity} />
-      <Dial opacity={active === 3 || active === 4 || active === 6 || active === 7 || active === 8 ? 0.2 : 1} />
+      <Dial opacity={isolatePendulum ? 0.06 : active === 6 || active === 7 || active === 8 ? 0.2 : 1} />
       <group position={[0, 0.67, 0.28]}>
         <Pendulum amplitude={amplitude} length={length} emphasized={active === 3 || active === 4 || active === 5} />
       </group>
-      <GoingTrain highlighted={active === 6 || active === 8} />
-      <Weight x={-0.58} height={weightHeight} glow={active === 7 || active === 8} />
-      <Weight x={0} height={Math.max(0.32, weightHeight - 0.16)} glow={active === 7} scale={0.94} />
-      <Weight x={0.58} height={Math.max(0.25, weightHeight - 0.29)} glow={active === 7} scale={0.97} />
+      {!isolatePendulum && <GoingTrain highlighted={active === 6 || active === 8} />}
+      {!isolatePendulum && <Weight x={-0.58} height={weightHeight} glow={active === 7 || active === 8} />}
+      {!isolatePendulum && <Weight x={0} height={Math.max(0.32, weightHeight - 0.16)} glow={active === 7} scale={0.94} />}
+      {!isolatePendulum && <Weight x={0.58} height={Math.max(0.25, weightHeight - 0.29)} glow={active === 7} scale={0.97} />}
       <EnergyFlow visible={active === 8} />
     </group>
   )
@@ -322,11 +336,11 @@ function Sundial() {
     <group position={[-1.5, -0.8, 0]}>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.72, 0.76, 0.12, 48]} />
-        <meshStandardMaterial color="#b9a57c" roughness={0.75} />
+        <meshStandardMaterial color="#d8b983" roughness={0.82} />
       </mesh>
       <mesh position={[0, 0.36, 0]} rotation={[0, 0, -0.32]}>
         <coneGeometry args={[0.12, 0.85, 3]} />
-        <meshStandardMaterial color="#705d43" roughness={0.65} />
+        <meshStandardMaterial color="#9b7050" roughness={0.72} />
       </mesh>
     </group>
   )
@@ -337,11 +351,11 @@ function WaterClock() {
     <group position={[0, -0.55, 0]}>
       <mesh position={[0, 0.55, 0]}>
         <cylinderGeometry args={[0.34, 0.55, 0.74, 32, 1, true]} />
-        <meshStandardMaterial color="#9b7c57" roughness={0.54} side={THREE.DoubleSide} />
+        <meshStandardMaterial color="#c8956f" roughness={0.7} side={THREE.DoubleSide} />
       </mesh>
       <mesh position={[0, -0.4, 0]}>
         <cylinderGeometry args={[0.5, 0.34, 0.65, 32, 1, true]} />
-        <meshStandardMaterial color="#9b7c57" roughness={0.54} side={THREE.DoubleSide} />
+        <meshStandardMaterial color="#c8956f" roughness={0.7} side={THREE.DoubleSide} />
       </mesh>
       <mesh position={[0, 0.02, 0]}>
         <sphereGeometry args={[0.06, 16, 10]} />
@@ -360,7 +374,7 @@ function CandleClock() {
     <group position={[1.5, -0.65, 0]}>
       <mesh>
         <cylinderGeometry args={[0.24, 0.27, 1.28, 28]} />
-        <meshStandardMaterial color="#d9cba4" roughness={0.82} />
+        <meshStandardMaterial color="#f0dfb9" roughness={0.88} />
       </mesh>
       {[-0.38, -0.12, 0.14, 0.4].map((y) => (
         <mesh key={y} position={[0, y, 0.245]}>
@@ -389,7 +403,7 @@ function Timekeepers({ visible }) {
       <CandleClock />
       <mesh position={[0, -1.28, 0]} receiveShadow>
         <boxGeometry args={[4.4, 0.12, 1.8]} />
-        <meshStandardMaterial color="#332820" roughness={0.72} />
+        <meshStandardMaterial color="#d9ccc0" roughness={0.86} />
       </mesh>
     </group>
   )
@@ -446,19 +460,19 @@ function EscapementStudy({ visible, amplitude, length }) {
       <group ref={anchor} position={[0, 0.68, 0.18]}>
         <mesh rotation={[0, 0, -0.55]} position={[-0.43, -0.1, 0]}>
           <boxGeometry args={[0.76, 0.11, 0.12]} />
-          <meshStandardMaterial color="#d9d0ba" metalness={0.5} roughness={0.3} />
+          <meshStandardMaterial color="#e5d6bd" metalness={0.05} roughness={0.52} />
         </mesh>
         <mesh rotation={[0, 0, 0.55]} position={[0.43, -0.1, 0]}>
           <boxGeometry args={[0.76, 0.11, 0.12]} />
-          <meshStandardMaterial color="#d9d0ba" metalness={0.5} roughness={0.3} />
+          <meshStandardMaterial color="#e5d6bd" metalness={0.05} roughness={0.52} />
         </mesh>
         <mesh position={[-0.73, -0.32, 0]} rotation={[0, 0, -0.2]}>
           <boxGeometry args={[0.2, 0.3, 0.15]} />
-          <meshStandardMaterial color="#ebe1c8" metalness={0.35} />
+          <meshStandardMaterial color="#f3e8d2" metalness={0.03} roughness={0.5} />
         </mesh>
         <mesh position={[0.73, -0.32, 0]} rotation={[0, 0, 0.2]}>
           <boxGeometry args={[0.2, 0.3, 0.15]} />
-          <meshStandardMaterial color="#ebe1c8" metalness={0.35} />
+          <meshStandardMaterial color="#f3e8d2" metalness={0.03} roughness={0.5} />
         </mesh>
       </group>
     </group>
@@ -466,25 +480,29 @@ function EscapementStudy({ visible, amplitude, length }) {
 }
 
 function Scene({ active, amplitude, length, weightHeight }) {
-  const { camera } = useThree()
+  const { camera, size } = useThree()
   useFrame(() => {
     const zoomed = active === 6
-    const target = new THREE.Vector3(0, zoomed ? 0.35 : 0.08, zoomed ? 8.6 : 10.2)
+    const target = new THREE.Vector3(7.8, zoomed ? 6.25 : 6.8, zoomed ? 9.2 : 10.4)
     camera.position.lerp(target, 0.045)
-    camera.lookAt(0, zoomed ? 0.25 : 0, 0)
+    const targetZoom = size.width < 760 ? (zoomed ? 84 : 88) : (zoomed ? 106 : 116)
+    camera.zoom = THREE.MathUtils.lerp(camera.zoom, targetZoom, 0.055)
+    camera.updateProjectionMatrix()
+    camera.lookAt(0, zoomed ? 0.2 : 0, 0)
   })
 
   return (
     <>
-      <ambientLight intensity={1.35} />
-      <directionalLight position={[-4, 7, 6]} intensity={3.2} color="#ffe6b0" castShadow shadow-mapSize={[1024, 1024]} />
-      <directionalLight position={[5, 2, 5]} intensity={2.0} color="#9ab5c8" />
-      <pointLight position={[0, -1, 4]} intensity={1.4} color="#d69c55" />
+      <ambientLight intensity={1.9} color="#fff8ef" />
+      <hemisphereLight args={['#fff8f0', '#c5b3a4', 1.15]} />
+      <directionalLight position={[-5, 10, 8]} intensity={3.1} color="#fff2df" castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0002} />
+      <directionalLight position={[7, 5, -3]} intensity={1.45} color="#c9d7dc" />
+      <pointLight position={[1, 1, 5]} intensity={0.8} color="#ffd9a0" />
       <ClockModel active={active} amplitude={amplitude} length={length} weightHeight={weightHeight} />
       <Timekeepers visible={active === 1} />
       <FrequencyField visible={active === 2} />
       <EscapementStudy visible={active === 6} amplitude={amplitude} length={length} />
-      <ContactShadows position={[0, -3.23, 0]} opacity={0.42} scale={8} blur={2.6} far={5} color="#0a0807" />
+      <ContactShadows position={[0, -3.48, 0]} opacity={0.28} scale={9} blur={3.3} far={5} color="#766256" />
     </>
   )
 }
@@ -494,7 +512,8 @@ export default function ClockScene(props) {
     <Canvas
       shadows
       dpr={[1, 1.65]}
-      camera={{ position: [0, 0.1, 10.2], fov: 40, near: 0.1, far: 100 }}
+      orthographic
+      camera={{ position: [7.8, 6.8, 10.4], zoom: 116, near: 0.1, far: 100 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
     >
       <Scene {...props} />
