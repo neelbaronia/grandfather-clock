@@ -354,8 +354,52 @@
       animation: drip 1.6s ease-in infinite;
     }
     .drop-ripple { position: absolute; left: 24%; right: 24%; bottom: 30%; height: 16px; border: 4px solid var(--blue); border-radius: 50%; animation: ripple 1.6s ease-out infinite; }
-    .orbit { position: absolute; top: 12%; left: 29%; width: 42%; aspect-ratio: 1; border: 3px dashed var(--blue); border-radius: 50%; }
-    .orbit::before { content: ''; position: absolute; top: -14px; left: 43%; width: 27px; aspect-ratio: 1; border: 4px solid var(--ink); border-radius: 50%; background: var(--gold); transform-origin: 50% calc(50% + 50px); animation: orbit 8s linear infinite; }
+    .sundial-demo { position: absolute; inset: 8% 10% 23%; overflow: hidden; }
+    .sundial-face {
+      position: absolute;
+      right: 4%;
+      bottom: 0;
+      left: 4%;
+      height: 36%;
+      border: 5px solid var(--ink);
+      border-radius: 50%;
+      background: #dbc77f;
+    }
+    .sundial-gnomon {
+      position: absolute;
+      z-index: 3;
+      bottom: 15%;
+      left: 50%;
+      width: 10%;
+      height: 45%;
+      background: var(--red);
+      clip-path: polygon(45% 0, 100% 100%, 0 100%);
+      transform: translateX(-50%);
+    }
+    .sundial-shadow {
+      position: absolute;
+      z-index: 2;
+      bottom: 20%;
+      left: 50%;
+      width: 37%;
+      height: 6px;
+      border-radius: 6px;
+      background: rgba(23, 57, 54, .72);
+      transform-origin: 0 50%;
+      animation: shadow-turn 5s ease-in-out infinite;
+    }
+    .sundial-sun {
+      position: absolute;
+      top: 47%;
+      left: 8%;
+      width: 31px;
+      aspect-ratio: 1;
+      border: 4px solid var(--ink);
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 8px rgba(210, 161, 63, .18);
+      animation: sun-cross 5s ease-in-out infinite;
+    }
     .mini-pendulum { position: absolute; top: 8%; left: 50%; width: 5px; height: 54%; background: var(--gold); transform-origin: top; animation: swing 2s ease-in-out infinite alternate; }
     .mini-pendulum::after { content: ''; position: absolute; bottom: -25px; left: 50%; width: 47px; aspect-ratio: 1; border: 5px solid var(--ink); border-radius: 50%; background: var(--gold); transform: translateX(-50%); }
     .steady-stamp { position: absolute; z-index: 6; top: 9px; right: 9px; padding: 5px 7px; color: #f7ebc6; background: var(--red); font: 700 .45rem/1 ui-monospace, monospace; letter-spacing: .06em; transform: rotate(2deg); }
@@ -481,7 +525,16 @@
     @keyframes heartbeat { 0%, 40%, 100% { transform: translate(-50%, -50%) scale(1); } 12% { transform: translate(-50%, -50%) scale(1.2); } 23% { transform: translate(-50%, -50%) scale(.96); } }
     @keyframes drip { 0% { top: 8%; opacity: 0; } 20% { opacity: 1; } 78% { top: 55%; opacity: 1; } 100% { top: 58%; opacity: 0; } }
     @keyframes ripple { 0%, 66% { transform: scale(.35); opacity: 0; } 72% { opacity: .8; } 100% { transform: scale(1.2); opacity: 0; } }
-    @keyframes orbit { to { transform: rotate(360deg); } }
+    @keyframes sun-cross {
+      0% { top: 47%; left: 8%; }
+      50% { top: 4%; left: calc(50% - 15px); }
+      100% { top: 47%; left: calc(92% - 31px); }
+    }
+    @keyframes shadow-turn {
+      0% { transform: rotate(12deg) scaleX(1.15); }
+      50% { transform: rotate(90deg) scaleX(.48); }
+      100% { transform: rotate(168deg) scaleX(1.15); }
+    }
     @keyframes hand-turn { to { transform: rotate(360deg); } }
     @keyframes pulse-out { 0% { opacity: .8; transform: translate(-50%, -50%) scale(.7); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(4); } }
     @keyframes sync-hand { from { transform: rotate(205deg); } to { transform: rotate(565deg); } }
@@ -519,7 +572,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .ruler-pendulum, .beat-ruler span::before, .heart, .drop, .drop-ripple, .orbit::before, .mini-pendulum, .cycle-hand, .pulse-ring, .little-clock::before, .sync-line { animation-play-state: paused; }
+      .ruler-pendulum, .beat-ruler span::before, .heart, .drop, .drop-ripple, .sundial-sun, .sundial-shadow, .mini-pendulum, .cycle-hand, .pulse-ring, .little-clock::before, .sync-line { animation-play-state: paused; }
     }
   </style>
 </head>
@@ -584,22 +637,22 @@
         <div class="mock">
           <div class="wall"></div><div class="frame"></div><div class="rug"></div>
           <article class="copy-card">
-            <small>Not every repeat is equal</small>
-            <h3>Many things repeat. Few keep a steady beat.</h3>
-            <p>A heartbeat, a dripping tap, a turning Earth, a pendulum—each has a <em>frequency</em>: how often it repeats. To standardize time, we need an event whose period stays steady.</p>
-            <p class="note">Frequency tells us how often. Stability tells us whether we can trust it.</p>
+            <small>The useful abstraction</small>
+            <h3>A clock begins with a repeat.</h3>
+            <p>Choose an event that comes back after the same interval. One return is a <em>period</em>. Count those returns, and duration becomes something we can measure instead of guess.</p>
+            <p class="note">The event can be a sunrise, a heartbeat, or a swing. Regularity is what makes it useful.</p>
           </article>
           <div class="repeat-lab" aria-label="Four repeating events compared">
             <div class="specimen"><div class="heart">♥</div><b>Heartbeat</b><small>VARIES</small></div>
             <div class="specimen"><div class="drop"></div><div class="drop-ripple"></div><b>Water drop</b><small>FLOW SHIFTS</small></div>
-            <div class="specimen"><div class="orbit"></div><b>Earth’s turn</b><small>VERY STEADY</small></div>
+            <div class="specimen"><div class="sundial-demo"><div class="sundial-sun"></div><div class="sundial-face"></div><div class="sundial-shadow"></div><div class="sundial-gnomon"></div></div><b>Sundial</b><small>SKY-DEPENDENT</small></div>
             <div class="specimen"><div class="mini-pendulum"></div><span class="steady-stamp">TUNABLE</span><b>Pendulum</b><small>STEADY</small></div>
           </div>
           <span class="pick-tag">Four animated specimens</span>
         </div>
         <div class="rationale">
           <div><small>Teaching move</small><b>Compare candidates</b><p>Familiar objects separate the ideas of recurrence, rate, and reliability.</p></div>
-          <div><small>Animation</small><b>Four distinct rhythms</b><p>Heartbeat, drip, orbit, and swing loop at visibly different rates.</p></div>
+          <div><small>Animation</small><b>Four distinct rhythms</b><p>Heartbeat, drip, sun-and-shadow, and swing loop at visibly different rates.</p></div>
           <div><small>Best if</small><b>You want broad intuition</b><p>This has the richest preamble and makes “why pendulums?” feel earned.</p></div>
         </div>
       </div>
