@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  beatsPerHour,
   correctedPendulumPeriod,
   pendulumPeriod,
   potentialEnergy,
@@ -11,14 +10,18 @@ const IllustratedStage = lazy(() => import('./components/IllustratedStage.jsx'))
 
 const chapters = [
   { id: 'overture', label: 'The clock' },
-  { id: 'before', label: 'Before clocks' },
-  { id: 'frequency', label: 'Frequency' },
+  { id: 'repeat', label: 'Find a repeat' },
   { id: 'pendulum', label: 'The pendulum' },
-  { id: 'arc', label: 'The arc' },
-  { id: 'case', label: 'Into the case' },
+  { id: 'window', label: 'The window' },
+  { id: 'fade', label: 'The fading swing' },
+  { id: 'push', label: 'A timed push' },
+  { id: 'return', label: 'Back to the clock' },
+  { id: 'dissipation', label: 'Friction' },
+  { id: 'source', label: 'Energy source' },
+  { id: 'weights', label: 'Stored height' },
+  { id: 'train', label: 'Gear train' },
   { id: 'escapement', label: 'Escapement' },
-  { id: 'weights', label: 'The weights' },
-  { id: 'handoff', label: 'Energy handoff' },
+  { id: 'impulse', label: 'One impulse' },
   { id: 'whole', label: 'The whole clock' },
 ]
 
@@ -163,7 +166,9 @@ export default function App() {
   const { active, progress } = useStoryPosition()
   const [length, setLength] = useState(() => secondsPendulumLength())
   const [amplitude, setAmplitude] = useState(4)
+  const [mass, setMass] = useState(5)
   const [weightHeight, setWeightHeight] = useState(1.35)
+  const [decayRun, setDecayRun] = useState(0)
   const [sound, setSound] = useState(false)
 
   const period = useMemo(() => pendulumPeriod(length), [length])
@@ -172,8 +177,8 @@ export default function App() {
     [length, amplitude],
   )
   const dailyArcError = (correctedPeriod / period - 1) * 86400
-  const storedEnergy = potentialEnergy(5, weightHeight)
-  useTick(sound, period)
+  const storedEnergy = potentialEnergy(mass, weightHeight)
+  useTick(sound, correctedPeriod)
 
   return (
     <div className="site-shell">
@@ -220,7 +225,9 @@ export default function App() {
               active={active}
               length={length}
               amplitude={amplitude}
+              mass={mass}
               weightHeight={weightHeight}
+              decayRun={decayRun}
             />
           </Suspense>
           <div className="stage-vignette" />
@@ -239,7 +246,7 @@ export default function App() {
                 A grandfather clock is a negotiation between something that wants to fall
                 and something that insists on swinging at its own pace.
               </p>
-              <a className="begin-link" href="#before"><span>Begin with no clocks</span><i>↓</i></a>
+              <a className="begin-link" href="#repeat"><span>Begin with a repeat</span><i>↓</i></a>
             </div>
             <div className="hero-aside" aria-hidden="true">
               <span>Weight</span><i>→</i><span>Gears</span><i>→</i><span>Beat</span>
@@ -248,56 +255,37 @@ export default function App() {
 
           <Chapter
             number="01"
-            id="before"
-            kicker="First, a human problem"
-            title="Time existed before clocks. Appointments did not."
+            id="repeat"
+            kicker="The useful abstraction"
+            title="A clock begins with a repeat."
           >
             <p>
-              The Sun can divide a day. Flowing water, burning candles, and falling sand
-              can divide the dark. But each depends on a rate that weather, temperature,
-              materials, or refilling can disturb.
+              Choose an event that comes back after the same interval. One return is a
+              <em> period</em>. Count those returns over one second and you have its
+              <em> frequency</em>.
             </p>
-            <div className="artifact-list" aria-label="Early timekeepers">
-              <span><i>☼</i><b>Sundial</b><small>Earth’s rotation</small></span>
-              <span><i>≈</i><b>Water clock</b><small>Fluid flow</small></span>
-              <span><i>│</i><b>Candle clock</b><small>Burn rate</small></span>
+            <Equation note="frequency is the number of repeats per second">f = 1 / T</Equation>
+            <div className="repeat-grid" aria-label="Examples of repeating events">
+              <span><i>♥</i><b>Heartbeat</b><small>Repeats, but varies</small></span>
+              <span><i>≈</i><b>Water drop</b><small>Flow rate shifts</small></span>
+              <span><i>☼</i><b>Sundial</b><small>Depends on the sky</small></span>
+              <span><i>↕</i><b>Pendulum</b><small>Regular and tunable</small></span>
             </div>
-            <p className="margin-note">The breakthrough was not finding time. It was finding a dependable repeat.</p>
+            <p className="margin-note">Regularity is what turns a recurring event into a ruler for time.</p>
           </Chapter>
 
           <Chapter
             number="02"
-            id="frequency"
-            kicker="The useful abstraction"
-            title="A clock is really a repeat counter."
-            side="right"
-          >
-            <p>
-              A regular event gives us a unit. Count heartbeats, quartz vibrations, or
-              pendulum swings and elapsed time becomes a number instead of a guess.
-            </p>
-            <Equation note="frequency = repeats each second">f = 1 / T</Equation>
-            <div className="frequency-strip" aria-hidden="true">
-              {Array.from({ length: 9 }, (_, index) => <i key={index} />)}
-            </div>
-            <p>
-              We care about frequency because a stable frequency is a reusable ruler for time.
-              The ruler can run while the sky is cloudy and while everyone is asleep.
-            </p>
-          </Chapter>
-
-          <Chapter
-            number="03"
             id="pendulum"
-            kicker="A ruler made from gravity"
-            title="Length chooses the tempo."
+            kicker="A repeat you can build almost anywhere"
+            title="Gravity provides the rhythm."
+            className="chapter--lab"
           >
             <p>
-              Pull a pendulum aside and gravity supplies a restoring force. Inertia carries
-              it past the center. For small arcs, the full back-and-forth period depends mainly
-              on length <em>L</em> and gravity <em>g</em>—not the bob’s mass.
+              A pendulum needs no sunlight and consumes no water, wax, or sand. Give it
+              gravity and a stable support, then its length sets a repeatable tempo.
             </p>
-            <Equation note="T is one complete left-and-right cycle">T = 2π √(L / g)</Equation>
+            <Equation note="one complete left-and-right cycle">T ≈ 2π √(L / g)</Equation>
             <Range
               label="Pendulum length"
               value={length}
@@ -307,99 +295,162 @@ export default function App() {
               onChange={setLength}
               valueLabel={`${length.toFixed(3)} m`}
             />
+            <Range
+              label="Bob mass"
+              value={mass}
+              min={1}
+              max={10}
+              step={0.1}
+              onChange={setMass}
+              valueLabel={`${mass.toFixed(1)} kg`}
+            />
+            <Range
+              label="Release angle"
+              value={amplitude}
+              min={2}
+              max={20}
+              step={1}
+              onChange={setAmplitude}
+              valueLabel={`${amplitude}°`}
+            />
             <div className="stat-pair">
-              <span><small>FULL PERIOD</small><b>{period.toFixed(3)} s</b></span>
-              <span><small>BEATS / HOUR</small><b>{Math.round(beatsPerHour(length)).toLocaleString()}</b></span>
+              <span><small>PERIOD T</small><b>{correctedPeriod.toFixed(3)} s</b></span>
+              <span><small>FREQUENCY f</small><b>{(1 / correctedPeriod).toFixed(3)} Hz</b></span>
             </div>
+            <div className="formula-list">
+              <span><b>Angular frequency</b><code>ω = 2πf = √(g/L)</code></span>
+              <span><b>Position</b><code>θ(t) ≈ θ₀ cos(ωt)</code></span>
+              <span><b>Mass cancels</b><code>mL²θ̈ = −mgL sin θ</code></span>
+            </div>
+            <p className="margin-note">
+              A lone pendulum has a <em>period</em>, not a spatial wavelength. Its bob travels an arc
+              length <b>s = Lθ</b>. At {amplitude}°, circular error would add about {dailyArcError.toFixed(1)} s/day if unregulated.
+            </p>
             <button className="text-button" type="button" onClick={() => setLength(secondsPendulumLength())}>
               Set the classic seconds pendulum →
             </button>
           </Chapter>
 
           <Chapter
+            number="03"
+            id="window"
+            kicker="A view from the room"
+            title="But a pendulum cannot swing forever."
+          >
+            <p>
+              Look through the window. A playground swing is just another pendulum: a rider
+              and seat moving beneath a fixed support. Its length gives it a natural period.
+            </p>
+            <div className="analogy-pair">
+              <span><b>Clock</b><small>rod + brass bob</small></span>
+              <i>↔</i>
+              <span><b>Playground</b><small>chains + child</small></span>
+            </div>
+            <p className="margin-note">Same gravity. Same restoring force. Same problem: every real swing loses energy.</p>
+          </Chapter>
+
+          <Chapter
             number="04"
-            id="arc"
-            kicker="Why the swing behaves"
-            title="Small arcs are nearly isochronous."
+            id="fade"
+            kicker="Step outside"
+            title="Leave it alone and the arc shrinks."
             side="right"
           >
             <p>
-              A taller release travels farther, but gravity also pulls harder. Near the bottom,
-              those effects nearly cancel, so modest swings take almost the same time.
+              Air pushes against the rider. The bearings resist at the top. The seat and chains
+              flex. Each pass converts a little organized motion into scattered heat and sound.
             </p>
-            <div className="amplitude-picker" role="group" aria-label="Choose pendulum amplitude">
-              {[2, 8, 20].map((value) => (
-                <button
-                  type="button"
-                  key={value}
-                  onClick={() => setAmplitude(value)}
-                  className={amplitude === value ? 'is-active' : ''}
-                >
-                  {value}°
-                </button>
-              ))}
+            <div className="equation equation--quiet">
+              <strong>A(t) = A₀e<sup>−γt</sup></strong>
+              <span>the amplitude envelope decays</span>
             </div>
-            <div className="arc-readout">
-              <span>Small-angle ideal<b>{period.toFixed(4)} s</b></span>
-              <span>{amplitude}° corrected<b>{correctedPeriod.toFixed(4)} s</b></span>
-              <span>Unregulated difference<b>+{dailyArcError.toFixed(1)} s/day</b></span>
-            </div>
-            <p className="margin-note">
-              Large arcs expose “circular error.” Real clockmakers keep amplitudes small and regulate the effective length.
-            </p>
+            <p className="margin-note">The rhythm survives for a while, but the visible motion cannot.</p>
           </Chapter>
 
           <Chapter
             number="05"
-            id="case"
-            kicker="Now add the furniture"
-            title="Put the oscillator inside the clock."
+            id="push"
+            kicker="The useful intervention"
+            title="A small push restores what friction took."
           >
             <p>
-              A roughly metre-long seconds pendulum needs a tall, stable enclosure. The longcase
-              protects it from drafts and curious hands; the heavy case gives the movement a rigid home.
+              The second child does not invent a new tempo. They wait for the right part of the
+              swing and add a little energy in the direction the rider is already moving.
             </p>
-            <div className="callout-stack">
-              <span><b>Bonnet</b><small>Protects the dial and movement</small></span>
-              <span><b>Trunk</b><small>Gives the pendulum room to swing</small></span>
-              <span><b>Plinth</b><small>Plants the clock firmly on the floor</small></span>
+            <div className="two-jobs">
+              <span><b>Length sets period</b><small>The swing chooses when to return.</small></span>
+              <span><b>Push sustains arc</b><small>The helper replaces lost energy.</small></span>
             </div>
-            <p className="margin-note">“Grandfather clock” is the familiar name; clockmakers also say longcase clock.</p>
+            <p className="margin-note">Push at the wrong moment and you disturb the motion. Timing matters as much as force.</p>
           </Chapter>
 
           <Chapter
             number="06"
-            id="escapement"
-            kicker="The mechanical handshake"
-            title="The escapement lets energy through one tooth at a time."
+            id="return"
+            kicker="Back through the window"
+            title="A clock needs its own patient pusher."
             side="right"
           >
             <p>
-              The escape wheel wants to spin freely. The anchor’s two pallets stop it. As the
-              pendulum swings, one pallet releases a tooth while the other catches the next.
+              Inside the longcase, there is no child waiting beside the pendulum. Instead,
+              a mechanism must notice each swing and deliver one tiny, repeatable nudge.
             </p>
-            <div className="two-jobs">
-              <span><b>① Count</b><small>Each swing permits a discrete gear step.</small></span>
-              <span><b>② Nudge</b><small>Each tooth returns a tiny impulse to the pendulum.</small></span>
-            </div>
-            <p>
-              That <em>tick—tock</em> is the sound of alternating pallets: lock, impulse, release.
-            </p>
+            <blockquote className="bridge-quote">The escapement is a pusher small enough to fit between two gear teeth.</blockquote>
+            <p className="margin-note">Now we can ask the mechanical question: where does that push get its energy?</p>
           </Chapter>
 
           <Chapter
             number="07"
-            id="weights"
-            kicker="A very slow fall"
-            title="Winding the clock stores height."
+            id="dissipation"
+            kicker="A thought experiment"
+            title="What is stealing the swing?"
           >
             <p>
-              Pulling a weight upward stores gravitational potential energy. As it descends,
-              a cord turns a drum and the gear train. The pendulum does not make the power—it meters it.
+              Watch the unpowered pendulum slow. Its period stays nearly steady at first,
+              while its amplitude and mechanical energy collapse toward rest.
             </p>
-            <Equation note="mass × gravity × height">E = mgh</Equation>
+            <div className="loss-grid">
+              <span><b>Air drag</b><small>the bob pushes air aside</small></span>
+              <span><b>Pivot friction</b><small>contact resists rotation</small></span>
+              <span><b>Flexing</b><small>materials warm microscopically</small></span>
+              <span><b>Clock load</b><small>the mechanism takes work</small></span>
+            </div>
+            <button className="replay-button" type="button" onClick={() => setDecayRun((value) => value + 1)}>
+              Replay the unpowered swing ↻
+            </button>
+          </Chapter>
+
+          <Chapter
+            number="08"
+            id="source"
+            kicker="X-ray the clock"
+            title="We need an energy source, a path, and a gate."
+          >
+            <p>
+              The tall case hides a compact energy system. Raised weights supply stored energy.
+              The gear train carries it upward. The escapement releases it in pendulum-sized portions.
+            </p>
+            <ol className="energy-path energy-path--compact">
+              <li><b>Store</b><span>raise a weight</span></li>
+              <li><b>Transmit</b><span>turn the gear train</span></li>
+              <li><b>Meter</b><span>release one tooth</span></li>
+              <li><b>Restore</b><span>nudge the pendulum</span></li>
+            </ol>
+          </Chapter>
+
+          <Chapter
+            number="09"
+            id="weights"
+            kicker="First: stored height"
+            title="A weight is a very slow battery."
+          >
+            <p>
+              Winding lifts the mass. As it descends, a cord turns a drum. The available
+              gravitational potential energy depends on mass, gravity, and height.
+            </p>
+            <Equation note="mass × gravity × height">Eₚ = mgh</Equation>
             <Range
-              label="Raise a 5 kg weight"
+              label={`Raise the ${mass.toFixed(1)} kg weight`}
               value={weightHeight}
               min={0.2}
               max={1.65}
@@ -411,40 +462,80 @@ export default function App() {
               <span style={{ width: `${weightHeight / 1.65 * 100}%` }} />
               <b>{storedEnergy.toFixed(1)} joules stored</b>
             </div>
-            <p className="margin-note">Many longcase clocks use separate weights for timekeeping, striking the hours, and playing chimes.</p>
+            <p className="margin-note">The weight falls continuously; the pendulum will decide how quickly it is allowed to fall.</p>
           </Chapter>
 
           <Chapter
-            number="08"
-            id="handoff"
-            kicker="Follow one packet of energy"
-            title="The weight supplies power. The pendulum supplies permission."
+            number="10"
+            id="train"
+            kicker="Second: carry the torque"
+            title="The gear train brings the fall to the escapement."
             side="right"
           >
-            <ol className="energy-path">
-              <li><b>Weight falls</b><span>Potential energy turns the winding drum.</span></li>
-              <li><b>Gears divide</b><span>The train carries torque toward the escape wheel and hands.</span></li>
-              <li><b>Escapement meters</b><span>One tooth advances on each beat.</span></li>
-              <li><b>Pendulum receives</b><span>A tiny impulse replaces energy lost to air and friction.</span></li>
-            </ol>
-            <p className="margin-note">The push is deliberately small: enough to sustain the arc, not enough to dictate its rhythm.</p>
+            <p>
+              Tension in the cord twists the winding drum. Meshing wheels transmit that torque,
+              change speed, and drive both the clock hands and the escape wheel.
+            </p>
+            <Equation note="drum radius × weight force">τ ≈ rmg</Equation>
+            <div className="callout-stack">
+              <span><b>Drum</b><small>turns as the cord unwinds</small></span>
+              <span><b>Wheel train</b><small>trades torque for speed</small></span>
+              <span><b>Escape wheel</b><small>waits at the final gate</small></span>
+            </div>
           </Chapter>
 
           <Chapter
-            number="09"
+            number="11"
+            id="escapement"
+            kicker="Third: open the gate"
+            title="The escapement counts and nudges."
+            side="right"
+          >
+            <p>
+              The escape wheel wants to spin. The anchor’s pallets alternately lock and release
+              its teeth. Every release advances the train and presses briefly on the pendulum.
+            </p>
+            <div className="two-jobs">
+              <span><b>① Count</b><small>one gear step per beat</small></span>
+              <span><b>② Nudge</b><small>one small impulse per beat</small></span>
+            </div>
+            <p className="margin-note"><em>Tick—tock</em> is the sound of lock, impulse, and release changing sides.</p>
+          </Chapter>
+
+          <Chapter
+            number="12"
+            id="impulse"
+            kicker="One packet of energy"
+            title="The push is brief, small, and well timed."
+          >
+            <p>
+              During contact, the escapement applies a short force. Its impulse replaces the
+              momentum lost since the previous beat without becoming the pendulum’s timekeeper.
+            </p>
+            <Equation note="force accumulated over a short contact">J = ∫F dt = Δp</Equation>
+            <div className="handoff-summary">
+              <span><b>Weight</b><small>supplies energy</small></span>
+              <i>→</i><span><b>Gears</b><small>carry torque</small></span>
+              <i>→</i><span><b>Escapement</b><small>meters impulse</small></span>
+              <i>→</i><span><b>Pendulum</b><small>sets the rhythm</small></span>
+            </div>
+          </Chapter>
+
+          <Chapter
+            number="13"
             id="whole"
             kicker="One machine, two tendencies"
-            title="Falling steadily would be too fast. Swinging alone would fade."
+            title="Falling alone is too fast. Swinging alone fades."
             className="chapter--final"
           >
             <p>
               Couple them and each corrects the other. The weight keeps the pendulum alive;
               the pendulum refuses to let the weight hurry. Gearing turns those counted beats
-              into minutes, hours, chimes—and a moving picture of the day.
+              into minutes, hours, and chimes.
             </p>
             <blockquote>
-              <span>Gravity provides the energy.</span>
-              <span>Length provides the rhythm.</span>
+              <span>Gravity supplies the energy.</span>
+              <span>Length supplies the rhythm.</span>
               <span>The escapement introduces them.</span>
             </blockquote>
             <a className="restart-link" href="#overture">Rewind the story ↑</a>

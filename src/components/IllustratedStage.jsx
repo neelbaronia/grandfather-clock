@@ -1,4 +1,5 @@
-import { pendulumPeriod } from '../physics.js'
+import { useEffect, useState } from 'react'
+import { correctedPendulumPeriod, pendulumPeriod } from '../physics.js'
 
 const teeth = Array.from({ length: 30 }, (_, index) => index * 12)
 const books = Array.from({ length: 28 }, (_, index) => ({
@@ -117,7 +118,7 @@ function RoomPlate() {
 }
 
 function ClockIllustration({ amplitude, length, weightHeight }) {
-  const period = pendulumPeriod(length)
+  const period = correctedPendulumPeriod(length, amplitude)
   const visualLength = 170 + length * 80
   const bobY = 287 + visualLength
   const weightY = 540 - weightHeight * 100
@@ -149,9 +150,18 @@ function ClockIllustration({ amplitude, length, weightHeight }) {
       </g>
 
       <g className="clock-train">
-        <circle cx="140" cy="295" r="32" fill="none" stroke="#c7983b" strokeWidth="11" />
-        {Array.from({ length: 12 }, (_, index) => (
-          <line key={index} x1="140" y1="263" x2="140" y2="327" stroke="#c7983b" strokeWidth="4" transform={`rotate(${index * 30} 140 295)`} />
+        {[
+          [140, 295, 34, 'clock-gear clock-gear--a'],
+          [92, 338, 25, 'clock-gear clock-gear--b'],
+          [190, 344, 22, 'clock-gear clock-gear--c'],
+        ].map(([x, y, radius, className]) => (
+          <g key={className} className={className}>
+            <circle cx={x} cy={y} r={radius} fill="#453126" stroke="#c7983b" strokeWidth="9" strokeDasharray="8 5" />
+            {Array.from({ length: 8 }, (_, index) => (
+              <line key={index} x1={x} y1={y - radius + 8} x2={x} y2={y + radius - 8} stroke="#c7983b" strokeWidth="3" transform={`rotate(${index * 45} ${x} ${y})`} />
+            ))}
+            <circle cx={x} cy={y} r="7" fill="#d2a13e" stroke="#173936" strokeWidth="4" />
+          </g>
         ))}
       </g>
 
@@ -215,6 +225,139 @@ function FrequencyOverlay() {
   )
 }
 
+function FrequencySpecimens() {
+  const panels = [
+    [0, 0, 'HEARTBEAT', 'VARIES'],
+    [255, 0, 'WATER DROP', 'FLOW SHIFTS'],
+    [0, 205, 'SUNDIAL', 'SKY-DEPENDENT'],
+    [255, 205, 'PENDULUM', 'TUNABLE'],
+  ]
+  return (
+    <g className="frequency-specimens" transform="translate(620 158)">
+      {panels.map(([x, y, label, note]) => (
+        <g key={label} transform={`translate(${x} ${y})`}>
+          <rect width="235" height="185" fill="#efe1b5" stroke="#173936" strokeWidth="5" />
+          <text x="14" y="165" className="specimen-label">{label}</text>
+          <text x="220" y="165" textAnchor="end" className="specimen-note">{note}</text>
+        </g>
+      ))}
+      <text x="117" y="92" textAnchor="middle" className="specimen-heart">♥</text>
+      <g transform="translate(372 32)">
+        <path className="specimen-drop" d="M0 0q-31 39 0 65 31-26 0-65Z" fill="#5e9194" stroke="#173936" strokeWidth="5" />
+        <ellipse className="specimen-ripple" cy="108" rx="62" ry="13" fill="none" stroke="#16434a" strokeWidth="5" />
+      </g>
+      <g transform="translate(117 284)">
+        <ellipse cy="58" rx="87" ry="26" fill="#d9c480" stroke="#173936" strokeWidth="5" />
+        <path d="M0 52V-17L18 54Z" fill="#9a312c" stroke="#173936" strokeWidth="4" />
+        <path className="specimen-shadow" d="M0 53h64" stroke="#173936" strokeWidth="7" strokeLinecap="round" />
+        <circle className="specimen-sun" cx="-70" cy="-26" r="17" fill="#d2a13e" stroke="#173936" strokeWidth="4" />
+      </g>
+      <g className="specimen-pendulum" transform="translate(373 237)">
+        <path d="M0 0v93" stroke="#d2a13e" strokeWidth="6" />
+        <circle cy="116" r="28" fill="#d2a13e" stroke="#173936" strokeWidth="5" />
+      </g>
+    </g>
+  )
+}
+
+function PendulumStudy({ amplitude, length, mass }) {
+  const period = correctedPendulumPeriod(length, amplitude)
+  const visualLength = 245 + (length - 0.35) / 0.9 * 135
+  const bobRadius = 38 + (mass - 1) / 9 * 11
+  return (
+    <g className="pendulum-study">
+      <path d="M760 105A320 320 0 0 0 760 704" fill="none" stroke="#173936" strokeWidth="3" strokeDasharray="9 8" opacity=".32" />
+      <path d="M760 105A320 320 0 0 1 760 704" fill="none" stroke="#173936" strokeWidth="3" strokeDasharray="9 8" opacity=".32" />
+      <circle cx="760" cy="112" r="17" fill="#f0e4bf" stroke="#173936" strokeWidth="6" />
+      <g
+        className="study-pendulum"
+        style={{ '--study-period': `${period}s`, '--study-angle': `${amplitude}deg` }}
+      >
+        <path d={`M760 112V${112 + visualLength}`} stroke="#d2a13e" strokeWidth="8" />
+        <circle cx="760" cy={112 + visualLength} r={bobRadius} fill="url(#brassPattern)" stroke="#173936" strokeWidth="7" />
+      </g>
+      <path d={`M885 122h46v${Math.max(200, visualLength - 16)}h-46`} fill="none" stroke="#9a312c" strokeWidth="4" />
+      <text x="910" y={120 + visualLength / 2} className="study-label">L</text>
+      <g className="study-wave" transform="translate(590 610)">
+        <rect width="520" height="125" fill="#f3e8c3" stroke="#173936" strokeWidth="4" />
+        <path d="M18 65C55 10 92 10 129 65s74 55 111 0 74-55 111 0 74 55 111 0" fill="none" stroke="#9a312c" strokeWidth="6" strokeLinecap="round" />
+        <path d="M129 17v92M351 17v92M129 102h222" fill="none" stroke="#173936" strokeWidth="2" strokeDasharray="6 5" />
+        <text x="232" y="119" className="study-label">ONE PERIOD T</text>
+      </g>
+    </g>
+  )
+}
+
+function SwingScene() {
+  return (
+    <g className="swing-scene">
+      <g className="playground-yard">
+        <rect width="1200" height="800" fill="#83a5a1" />
+        <circle cx="160" cy="145" r="46" fill="#eee3bd" opacity=".72" />
+        <ellipse cx="920" cy="125" rx="86" ry="34" fill="#eee3bd" opacity=".55" />
+        <path d="M0 520q170-60 345 8t335-4q210-77 520 5v271H0Z" fill="#91a06d" />
+        <path d="M0 594q190-68 360 10t346-8q215-79 494 10v194H0Z" fill="#6e8457" stroke="#173936" strokeWidth="5" />
+        <path d="M1070 320v390" stroke="#754126" strokeWidth="55" />
+        <ellipse cx="1060" cy="294" rx="180" ry="136" fill="#315d40" stroke="#173936" strokeWidth="8" />
+      </g>
+      <g className="playground-subject" transform="translate(640 430)">
+        <path d="M-225 245-165-205M225 245 165-205M-184-205h368" fill="none" stroke="#754126" strokeWidth="14" strokeLinecap="round" />
+        <path d="M-191-205h382" stroke="#173936" strokeWidth="5" />
+        <g className="playground-rider">
+          <path d="M-40-188V47M40-188V47" stroke="#d2a13e" strokeWidth="6" />
+          <path d="M-57 45h114" stroke="#173936" strokeWidth="16" />
+          <circle cy="-26" r="30" fill="#c67d56" stroke="#173936" strokeWidth="6" />
+          <path d="M-32 4h64v78h-64Z" fill="#16434a" stroke="#173936" strokeWidth="6" />
+          <path d="M-5 75 58 116M5 75 77 89" stroke="#173936" strokeWidth="10" strokeLinecap="round" />
+        </g>
+        <g className="playground-pusher" transform="translate(-158 32)">
+          <circle cy="-55" r="30" fill="#b96849" stroke="#173936" strokeWidth="6" />
+          <rect x="-35" y="-25" width="70" height="96" rx="25" fill="#d2a13e" stroke="#173936" strokeWidth="6" />
+          <path d="M28-6 105-25" stroke="#173936" strokeWidth="11" strokeLinecap="round" />
+          <path d="M-15 67-32 142M17 67 43 137" stroke="#173936" strokeWidth="11" strokeLinecap="round" />
+        </g>
+        <g className="playground-push-burst">
+          {Array.from({ length: 10 }, (_, index) => (
+            <path key={index} d="M-105-10h-38" stroke="#9a312c" strokeWidth="7" transform={`rotate(${index * 36} -105 -10)`} />
+          ))}
+        </g>
+      </g>
+      <g className="playground-window">
+        <rect x="885" y="92" width="270" height="360" fill="#83a5a1" stroke="#173936" strokeWidth="20" />
+        <path d="M1020 92v360M885 272h270" stroke="#754126" strokeWidth="13" />
+        <path d="M905 355q82-55 136 0t94-6v84H905Z" fill="#648054" />
+        <g transform="translate(1020 270) scale(.34)">
+          <path d="M-225 245-165-205M225 245 165-205M-184-205h368" fill="none" stroke="#754126" strokeWidth="18" />
+          <path d="M-32-188V48M32-188V48M-55 47h110" stroke="#d2a13e" strokeWidth="10" />
+          <circle cy="-12" r="34" fill="#c67d56" stroke="#173936" strokeWidth="8" />
+          <path d="M-35 18h70v90h-70Z" fill="#16434a" stroke="#173936" strokeWidth="8" />
+        </g>
+      </g>
+    </g>
+  )
+}
+
+function DissipationVisual({ angle, energy }) {
+  return (
+    <g className="dissipation-visual">
+      <path d="M655 85h340l45 74v535H610V159Z" fill="#8b4b2b" opacity=".22" stroke="#173936" strokeWidth="8" />
+      <path d="M825 190A240 240 0 0 0 825 660M825 190A240 240 0 0 1 825 660" fill="none" stroke="#9a312c" strokeWidth="3" strokeDasharray="10 8" opacity=".3" />
+      <circle cx="825" cy="190" r="18" fill="#f0e4bf" stroke="#173936" strokeWidth="6" />
+      <g transform={`rotate(${angle} 825 190)`}>
+        <path d="M825 190v345" stroke="#d2a13e" strokeWidth="9" />
+        <circle cx="825" cy="535" r="52" fill="url(#brassPattern)" stroke="#173936" strokeWidth="8" />
+      </g>
+      <g transform="translate(650 680)">
+        <rect width="350" height="56" fill="#16434a" stroke="#173936" strokeWidth="5" />
+        <rect x="18" y="31" width="314" height="10" fill="#263d38" stroke="#f0e4bf" strokeWidth="2" />
+        <rect x="20" y="33" width={310 * energy} height="6" fill="#d2a13e" />
+        <text x="18" y="20" className="decay-label-svg">ENERGY REMAINING</text>
+        <text x="330" y="20" textAnchor="end" className="decay-label-svg">{Math.round(energy * 100)}%</text>
+      </g>
+    </g>
+  )
+}
+
 function EscapementOverlay() {
   return (
     <g className="escapement-overlay" transform="translate(385 335)">
@@ -265,8 +408,29 @@ function EnergyOverlay() {
   )
 }
 
-export default function IllustratedStage({ active, amplitude, length, weightHeight }) {
-  const rightCard = [2, 4, 6, 8].includes(active)
+function useDampedMotion(active, runKey) {
+  const [motion, setMotion] = useState({ angle: 18, energy: 1 })
+  useEffect(() => {
+    if (active !== 7) return undefined
+    let frame = 0
+    const started = performance.now()
+    const animate = (now) => {
+      const elapsed = (now - started) / 1000
+      const envelope = Math.exp(-0.22 * elapsed)
+      const energy = Math.exp(-0.44 * elapsed)
+      const angle = 18 * envelope * Math.cos(Math.PI * elapsed)
+      setMotion({ angle: elapsed < 14 ? angle : 0, energy: elapsed < 14 ? energy : 0 })
+      if (elapsed < 14) frame = requestAnimationFrame(animate)
+    }
+    frame = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(frame)
+  }, [active, runKey])
+  return motion
+}
+
+export default function IllustratedStage({ active, amplitude, decayRun, length, mass, weightHeight }) {
+  const rightCard = [4, 6, 10, 11].includes(active)
+  const damped = useDampedMotion(active, decayRun)
   return (
     <div className={`illustrated-stage illustrated-stage--${active} ${rightCard ? 'illustrated-stage--card-right' : 'illustrated-stage--card-left'}`}>
       <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustrated living room containing an animated grandfather clock">
@@ -318,10 +482,11 @@ export default function IllustratedStage({ active, amplitude, length, weightHeig
         <RoomPlate />
         <g className="room-light"><circle cx="1000" cy="300" r="132" fill="#f1c45a" opacity=".14" filter="url(#warmGlow)" /></g>
         <ClockIllustration amplitude={amplitude} length={length} weightHeight={weightHeight} />
-        <HistoryObjects />
-        <FrequencyOverlay />
+        <FrequencySpecimens />
+        <PendulumStudy amplitude={amplitude} length={length} mass={mass} />
+        <SwingScene />
+        <DissipationVisual angle={damped.angle} energy={damped.energy} />
         <EscapementOverlay />
-        <AssemblyAnnotations />
         <EnergyOverlay />
       </svg>
       <div className="illustrated-stage__paper-grain" aria-hidden="true" />
