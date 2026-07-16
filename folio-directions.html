@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#153a38" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <title>Illustrated Folio · 2D vs 3D</title>
+  <style>
+    :root {
+      color: #173936;
+      background: #e8dfc3;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      --ink: #173936;
+      --paper: #f4ebca;
+      --red: #96312c;
+      --blue: #16434a;
+      --gold: #d2a13f;
+      --wood: #894828;
+      --muted: #686151;
+      --rule: rgba(23,57,54,.2);
+    }
+
+    * { box-sizing: border-box; }
+    html { overflow-x: hidden; scroll-behavior: smooth; }
+    body { min-width: 320px; margin: 0; overflow-x: hidden; background: #e8dfc3; }
+    a { color: inherit; }
+    ::selection { color: #f8edca; background: var(--red); }
+
+    .topbar {
+      position: sticky;
+      z-index: 100;
+      top: 0;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 0 32px;
+      color: #f6eccb;
+      border-bottom: 3px solid #d3a440;
+      background: rgba(21, 58, 56, .96);
+      backdrop-filter: blur(14px);
+    }
+    .topbar strong { font-size: .76rem; letter-spacing: .09em; text-transform: uppercase; }
+    .topbar small { display: block; margin-top: 3px; color: #cbbf98; font: .62rem/1 ui-monospace, monospace; }
+    .topbar nav { display: flex; gap: 22px; }
+    .topbar a { font-size: .65rem; letter-spacing: .07em; text-decoration: none; text-transform: uppercase; }
+
+    .hero {
+      position: relative;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 96px 42px 80px;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      top: 55px;
+      right: -7vw;
+      width: 39vw;
+      aspect-ratio: 1;
+      border: 1px solid rgba(150,49,44,.15);
+      border-radius: 50%;
+      box-shadow: 0 0 0 48px rgba(22,67,74,.035), 0 0 0 97px rgba(210,161,63,.04);
+    }
+    .kicker { margin: 0 0 14px; color: var(--red); font-size: .64rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .hero h1 {
+      max-width: 10em;
+      margin: 0;
+      color: var(--ink);
+      font: 700 clamp(4.2rem, 8.5vw, 9rem)/.82 "Iowan Old Style", Georgia, serif;
+      letter-spacing: -.075em;
+    }
+    .hero h1 em { color: var(--red); }
+    .hero-bottom {
+      display: grid;
+      grid-template-columns: 1fr minmax(300px, 440px);
+      gap: 7vw;
+      align-items: end;
+      margin-top: 42px;
+    }
+    .hero-bottom > p { max-width: 38em; margin: 0; color: #504c40; font-size: 1rem; line-height: 1.62; }
+    .thesis { padding: 20px 0 20px 23px; border-left: 2px solid var(--red); }
+    .thesis b { display: block; margin-bottom: 7px; color: var(--ink); font: 700 1.05rem/1.2 Georgia, serif; }
+    .thesis span { color: #665f4f; font-size: .76rem; line-height: 1.5; }
+
+    .split-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 1316px;
+      margin: 0 auto 80px;
+      border: 2px solid var(--ink);
+      background: var(--ink);
+      gap: 2px;
+    }
+    .split-nav a { position: relative; display: flex; align-items: center; justify-content: space-between; min-height: 86px; padding: 18px 23px; background: #f2e8c8; text-decoration: none; }
+    .split-nav a:hover { background: #e4ce8c; }
+    .split-nav small { color: var(--red); font: 700 .59rem/1 ui-monospace, monospace; letter-spacing: .1em; }
+    .split-nav b { color: var(--ink); font: 700 1.3rem/1 Georgia, serif; }
+    .split-nav i { font-style: normal; color: var(--red); }
+
+    .family { scroll-margin-top: 80px; padding: 84px 42px 100px; border-top: 1px solid var(--rule); }
+    .family--3d { background: #daceaa; }
+    .family-inner { max-width: 1316px; margin: 0 auto; }
+    .family-head { display: grid; grid-template-columns: 1fr minmax(300px, 420px); gap: 8vw; align-items: end; margin-bottom: 58px; }
+    .family-head h2 { margin: 0; color: var(--ink); font: 700 clamp(3.4rem, 6vw, 6.4rem)/.86 "Iowan Old Style", Georgia, serif; letter-spacing: -.065em; }
+    .family-head h2 em { color: var(--red); }
+    .family-head p { margin: 0; color: #5b5547; font-size: .9rem; line-height: 1.6; }
+    .family-verdict { display: inline-block; margin-top: 13px; padding: 7px 9px; color: #f4e8c1; background: var(--red); font: 700 .57rem/1 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+
+    .example { margin-bottom: 92px; }
+    .example:last-child { margin-bottom: 0; }
+    .example-head { display: grid; grid-template-columns: 1fr minmax(280px, 390px); gap: 7vw; align-items: end; margin-bottom: 23px; }
+    .example-id { display: block; margin-bottom: 8px; color: var(--red); font: 700 .58rem/1 ui-monospace, monospace; letter-spacing: .12em; }
+    .example h3 { margin: 0; color: var(--ink); font: 700 clamp(2.3rem, 4vw, 4rem)/.92 "Iowan Old Style", Georgia, serif; letter-spacing: -.05em; }
+    .example-head p { margin: 0; color: #625c4c; font-size: .8rem; line-height: 1.55; }
+    .mock {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border: 2px solid var(--ink);
+      background: #eee2bc;
+      box-shadow: 13px 14px 0 rgba(122,44,37,.14);
+    }
+    .family--3d .mock { box-shadow: 13px 14px 0 rgba(20,63,69,.15); }
+    .mock-tag { position: absolute; z-index: 30; right: 13px; bottom: 12px; padding: 7px 9px; color: #f5e9c2; border: 1px solid rgba(255,255,255,.2); background: rgba(20,55,53,.92); font: 700 .54rem/1 ui-monospace, monospace; letter-spacing: .07em; text-transform: uppercase; }
+    .tradeoffs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 23px; background: rgba(23,57,54,.19); }
+    .tradeoffs div { min-height: 115px; padding: 17px 19px; background: #f2e8c8; }
+    .family--3d .tradeoffs div { background: #eee2bd; }
+    .tradeoffs small { display: block; margin-bottom: 7px; color: var(--red); font: 700 .55rem/1 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .tradeoffs b { display: block; margin-bottom: 6px; color: var(--ink); font: 700 .94rem/1.15 Georgia, serif; }
+    .tradeoffs p { margin: 0; color: #6d6553; font-size: .68rem; line-height: 1.45; }
+
+    .ui-card { position: absolute; z-index: 20; padding: 20px 22px; color: var(--ink); border: 2px solid var(--ink); background: rgba(245,235,202,.95); box-shadow: 8px 8px 0 rgba(145,45,41,.2); }
+    .ui-card small { display: block; margin-bottom: 7px; color: var(--red); font: 700 .53rem/1 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
+    .ui-card b { display: block; font: 700 clamp(1.2rem, 2.8vw, 2.7rem)/.92 Georgia, serif; }
+    .ui-card p { margin: 9px 0 0; color: #5b5547; font-size: clamp(.55rem, .9vw, .78rem); line-height: 1.43; }
+
+    /* 2D A: room plate */
+    .plate { position: absolute; inset: 0; background: #eee3bd; }
+    .plate svg { width: 100%; height: 100%; display: block; }
+    .plate .ui-card { top: 8%; left: 5%; width: 34%; }
+    .pendulum-swing { transform-origin: 677px 323px; animation: swing 2s ease-in-out infinite alternate; }
+
+    /* 2D B: sequential folio */
+    .sequence { position: absolute; inset: 0; padding: 4.4% 4%; background: repeating-linear-gradient(90deg, transparent 0 14px, rgba(24,57,54,.055) 14px 15px), #ecdfb7; }
+    .sequence-title { display: flex; align-items: baseline; justify-content: space-between; color: var(--ink); }
+    .sequence-title b { font: 700 clamp(1.3rem, 3vw, 2.8rem)/1 Georgia, serif; }
+    .sequence-title small { color: var(--red); font: 700 .55rem/1 ui-monospace, monospace; }
+    .sequence-panels { height: 76%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.7%; margin-top: 2.4%; }
+    .seq-panel { position: relative; overflow: hidden; border: 2px solid var(--ink); background: #f4e8c1; }
+    .seq-panel::after { content: attr(data-step); position: absolute; top: 10px; left: 11px; color: var(--red); font: 700 .5rem/1 ui-monospace, monospace; letter-spacing: .08em; }
+    .sun-orbit { position: absolute; top: 21%; left: 16%; width: 70%; aspect-ratio: 1; border: 2px dashed #173e42; border-radius: 50%; }
+    .sun-orbit::before { content: ''; position: absolute; top: -9px; left: 47%; width: 19px; height: 19px; border-radius: 50%; background: var(--gold); }
+    .sundial { position: absolute; bottom: 15%; left: 20%; width: 60%; height: 18%; border: 3px solid var(--ink); border-radius: 50%; background: #d9c584; }
+    .sundial::after { content: ''; position: absolute; left: 49%; bottom: 42%; width: 3px; height: 72px; background: var(--red); transform: rotate(18deg); transform-origin: bottom; }
+    .line-pendulum { position: absolute; top: 16%; left: 50%; width: 5px; height: 62%; background: #c49538; transform-origin: top; animation: swing 2s ease-in-out infinite alternate; }
+    .line-pendulum::after { content: ''; position: absolute; bottom: -27px; left: 50%; width: 54px; height: 54px; border: 4px solid var(--ink); border-radius: 50%; background: var(--gold); transform: translateX(-50%); }
+    .seq-clock { position: absolute; top: 12%; bottom: 10%; left: 24%; width: 53%; border: 4px solid var(--ink); background: var(--wood); clip-path: polygon(15% 0,85% 0,100% 12%,94% 100%,6% 100%,0 12%); }
+    .seq-clock::before { content: ''; position: absolute; top: 10%; left: 50%; width: 70%; aspect-ratio: 1; border: 4px solid var(--ink); border-radius: 50%; background: conic-gradient(var(--ink) 0 2deg, transparent 2deg 29deg, var(--ink) 29deg 30deg), #f1e3b9; transform: translateX(-50%); }
+    .seq-clock::after { content: ''; position: absolute; top: 45%; bottom: 9%; left: 20%; width: 60%; border: 4px solid var(--ink); background: linear-gradient(90deg, transparent 48%, #d2a03d 49% 51%, transparent 52%), #442620; }
+    .sequence-arrow { position: absolute; z-index: 5; top: 51%; color: var(--red); font-size: 2rem; }
+    .sequence-arrow--one { left: 32.4%; }
+    .sequence-arrow--two { left: 66.3%; }
+
+    /* 2D C: tapestry scroll */
+    .tapestry { position: absolute; inset: 0; background: #183e44; }
+    .tapestry-strip { position: absolute; top: 0; bottom: 0; left: 13%; width: 74%; border-right: 12px solid #d3a03b; border-left: 12px solid #d3a03b; background: repeating-linear-gradient(90deg, transparent 0 13px, rgba(245,230,186,.12) 13px 14px), #a6322d; }
+    .tapestry-strip::before, .tapestry-strip::after { content: ''; position: absolute; right: -26px; left: -26px; height: 22px; background: repeating-linear-gradient(90deg, #ead9a1 0 7px, #173f45 7px 14px); }
+    .tapestry-strip::before { top: 0; }
+    .tapestry-strip::after { bottom: 0; }
+    .tapestry-clock { position: absolute; z-index: 4; top: 7%; left: 42%; width: 25%; height: 84%; border: 7px solid #153b3d; background: #9b572f; box-shadow: 11px 13px 0 rgba(23,54,52,.35); clip-path: polygon(16% 0,84% 0,100% 13%,93% 100%,7% 100%,0 13%); }
+    .tapestry-clock::before { content: ''; position: absolute; top: 8%; left: 50%; width: 76%; aspect-ratio: 1; border: 6px solid #153b3d; border-radius: 50%; background: conic-gradient(#173b3a 0 2deg, transparent 2deg 29deg, #173b3a 29deg 30deg), #efe2b8; transform: translateX(-50%); }
+    .tapestry-clock::after { content: ''; position: absolute; top: 43%; bottom: 8%; left: 19%; width: 62%; border: 6px solid #153b3d; background: radial-gradient(circle at 50% 76%, #d4a13d 0 9%, transparent 10%), linear-gradient(90deg, transparent 48%, #d4a13d 49% 51%, transparent 52%), #4c2822; }
+    .tapestry-flower { position: absolute; width: 13%; aspect-ratio: 1; border: 5px solid #e0bb58; border-radius: 50%; background: repeating-conic-gradient(#153e44 0 12deg, #e2b84f 12deg 23deg, #f0dfaa 23deg 30deg); }
+    .tapestry-flower--a { top: 9%; left: 18%; }
+    .tapestry-flower--b { right: 17%; bottom: 10%; }
+    .tapestry .ui-card { bottom: 8%; left: 5%; width: 31%; transform: rotate(-1deg); }
+
+    /* 3D shared room geometry in SVG-ish CSS */
+    .iso { position: absolute; inset: 0; overflow: hidden; background: #dacb9f; perspective: 1000px; }
+    .iso-wall-back { position: absolute; top: 0; right: 12%; width: 61%; height: 66%; transform: skewY(20deg); transform-origin: top right; background: repeating-linear-gradient(90deg, transparent 0 12px, rgba(23,57,54,.12) 12px 13px), #eee2b8; border-left: 4px solid var(--ink); }
+    .iso-wall-left { position: absolute; top: 6%; left: 5%; width: 31%; height: 60%; transform: skewY(-31deg); transform-origin: top left; background: repeating-linear-gradient(90deg, transparent 0 13px, rgba(150,49,44,.12) 13px 14px), #d6c285; border-right: 4px solid var(--ink); }
+    .iso-floor { position: absolute; right: 5%; bottom: -24%; left: 3%; height: 69%; border: 4px solid var(--ink); background: repeating-linear-gradient(4deg, #985932 0 5px, #a96538 5px 20px, #6d3b28 20px 22px); transform: rotateX(58deg) rotateZ(-2deg); transform-origin: bottom; }
+    .iso-rug { position: absolute; z-index: 3; right: 9%; bottom: -4%; width: 61%; height: 37%; border: 9px solid #143e45; background: radial-gradient(circle at 50% 50%, #d5a33e 0 8%, #a72f2b 8.5% 16%, #143e45 16.5% 22%, transparent 22.5%), repeating-conic-gradient(#a9322e 0 12deg, #d4a13c 12deg 18deg, #173e45 18deg 27deg); transform: perspective(650px) rotateX(62deg) rotateZ(-4deg); transform-origin: bottom; }
+    .iso-copy { position: absolute; z-index: 20; top: 8%; left: 5%; width: 34%; }
+
+    /* 3D D: room diorama */
+    .iso-clock {
+      position: absolute; z-index: 8; top: 8%; left: 52%; width: 20%; height: 78%; border: 5px solid var(--ink); background: linear-gradient(90deg, #71391f, #a66035 65%, #67331f); box-shadow: 15px 17px 0 #4c261d, 25px 31px 0 rgba(28,50,45,.2); clip-path: polygon(16% 0,84% 0,100% 12%,94% 100%,6% 100%,0 12%); }
+    .iso-clock::before { content: ''; position: absolute; top: 8%; left: 50%; width: 76%; aspect-ratio: 1; border: 5px solid var(--ink); border-radius: 50%; background: conic-gradient(var(--ink) 0 2deg,transparent 2deg 29deg,var(--ink) 29deg 30deg),#f0e3ba; transform: translateX(-50%); }
+    .iso-clock::after { content: ''; position: absolute; top: 42%; bottom: 8%; left: 18%; width: 64%; border: 5px solid var(--ink); background: radial-gradient(circle at 50% 74%,#d5a33e 0 9%,transparent 10%),linear-gradient(90deg,transparent 48%,#d5a33e 49% 51%,transparent 52%),#45251f; }
+    .iso-chair { position: absolute; z-index: 7; right: 7%; bottom: 11%; width: 19%; height: 27%; background: #17444a; border: 5px solid var(--ink); box-shadow: 11px 13px 0 #102e32; transform: skewY(-8deg); }
+    .iso-chair::before { content:''; position:absolute; top:-68%; left:7%; width:86%; height:72%; border:5px solid var(--ink); background:#20545a; }
+    .iso-shelf { position:absolute; z-index:4; top:18%; left:28%; width:18%; height:41%; border:5px solid var(--ink); background: repeating-linear-gradient(90deg,#17434a 0 14px,#a42f2b 14px 29px,#d1a03d 29px 42px,#eedda5 42px 53px); box-shadow: 9px 11px 0 #6f3724; }
+
+    /* 3D E: ink-rendered cutaway */
+    .cutaway { position: absolute; inset: 0; background: repeating-linear-gradient(87deg, transparent 0 13px, rgba(23,57,54,.09) 13px 14px), #e9ddb6; }
+    .cutaway-platform { position:absolute; right:7%; bottom:3%; width:62%; height:24%; border:5px solid var(--ink); background:repeating-linear-gradient(90deg,#9d5e35 0 24px,#854a2c 24px 27px); transform:skewY(-8deg); box-shadow:14px 17px 0 rgba(24,56,52,.25); }
+    .cut-case { position:absolute; z-index:3; top:8%; left:47%; width:24%; height:77%; border:6px solid var(--ink); background:rgba(139,72,40,.22); clip-path:polygon(16% 0,84% 0,100% 12%,94% 100%,6% 100%,0 12%); }
+    .cut-gear { position:absolute; z-index:8; border:15px dashed #c59639; border-radius:50%; box-shadow:0 0 0 5px var(--ink), inset 0 0 0 5px var(--ink); background:radial-gradient(circle,#d3a13d 0 12%,var(--ink) 13% 17%,transparent 18%); }
+    .cut-gear--one { top:14%; left:57%; width:21%; aspect-ratio:1; }
+    .cut-gear--two { top:37%; left:46%; width:16%; aspect-ratio:1; }
+    .cut-gear--three { top:45%; left:66%; width:12%; aspect-ratio:1; }
+    .cut-pendulum { position:absolute; z-index:7; top:38%; left:61%; width:5px; height:40%; background:#c89a3b; transform:rotate(-5deg); transform-origin:top; }
+    .cut-pendulum::after { content:''; position:absolute; bottom:-35px; left:50%; width:70px; height:70px; border:5px solid var(--ink); border-radius:50%; background:#d3a13d; transform:translateX(-50%); }
+    .cutaway .ui-card { top:12%; left:5%; width:34%; }
+    .leader { position:absolute; z-index:12; height:2px; background:var(--red); transform-origin:left; }
+    .leader::before { content:attr(data-label); position:absolute; left:0; bottom:7px; color:var(--red); font:700 .52rem/1 ui-monospace,monospace; letter-spacing:.08em; text-transform:uppercase; }
+    .leader--one { top:29%; left:34%; width:23%; transform:rotate(9deg); }
+    .leader--two { top:58%; left:29%; width:27%; transform:rotate(-6deg); }
+
+    /* 3D F: story tiles */
+    .tiles { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:5%; padding:5%; background:linear-gradient(#e9ddb6 0 62%,#c6ae75 62% 100%); }
+    .tile { position:relative; width:26%; aspect-ratio:1; border:4px solid var(--ink); background:#ddca8f; box-shadow:12px 15px 0 rgba(23,57,54,.25); transform:rotateX(55deg) rotateZ(-4deg); }
+    .tile::after { content:attr(data-caption); position:absolute; top:105%; left:0; width:100%; color:var(--ink); font:700 .52rem/1.2 ui-monospace,monospace; letter-spacing:.06em; text-align:center; text-transform:uppercase; transform:rotateZ(4deg) rotateX(-55deg); }
+    .tile-sun { position:absolute; top:18%; left:24%; width:52%; aspect-ratio:1; border:4px solid var(--ink); border-radius:50%; background:var(--gold); box-shadow:10px 12px 0 #9b542f; }
+    .tile-sun::after { content:''; position:absolute; left:49%; bottom:-68%; width:4px; height:95%; background:var(--red); transform:rotate(15deg); transform-origin:top; }
+    .tile-pend { position:absolute; top:9%; left:49%; width:5px; height:65%; background:#ba8831; transform-origin:top; transform:rotate(-9deg); }
+    .tile-pend::after { content:''; position:absolute; bottom:-27px; left:50%; width:55px; height:55px; border:4px solid var(--ink); border-radius:50%; background:var(--gold); transform:translateX(-50%); }
+    .tile-clock { position:absolute; top:7%; bottom:7%; left:26%; width:48%; border:4px solid var(--ink); background:var(--wood); clip-path:polygon(15% 0,85% 0,100% 12%,94% 100%,6% 100%,0 12%); }
+    .tile-clock::before { content:''; position:absolute; top:8%; left:50%; width:72%; aspect-ratio:1; border:3px solid var(--ink); border-radius:50%; background:#efe1b5; transform:translateX(-50%); }
+    .tile-clock::after { content:''; position:absolute; top:44%; bottom:8%; left:20%; width:60%; border:3px solid var(--ink); background:linear-gradient(90deg,transparent 47%,#d1a03d 48% 52%,transparent 53%),#4d2921; }
+    .tiles .ui-card { top:5%; left:4%; width:29%; transform:translateY(-3%); }
+
+    .matrix { max-width:1316px; margin:0 auto; padding:90px 42px 110px; }
+    .matrix h2 { max-width:10em; margin:0 0 34px; color:var(--ink); font:700 clamp(3rem,5vw,5.2rem)/.9 Georgia,serif; letter-spacing:-.06em; }
+    .matrix-table { display:grid; grid-template-columns:1.2fr repeat(2,1fr); border:2px solid var(--ink); background:var(--ink); gap:2px; }
+    .matrix-table div { padding:15px 17px; background:#f1e7c5; }
+    .matrix-table .head { color:#f5e9c2; background:var(--red); font:700 .65rem/1.2 ui-monospace,monospace; letter-spacing:.06em; text-transform:uppercase; }
+    .matrix-table b { color:var(--ink); font:700 .78rem/1.2 Georgia,serif; }
+    .matrix-table span { color:#6c6553; font-size:.7rem; }
+
+    footer { display:flex; justify-content:space-between; gap:30px; padding:50px 42px; color:#cabf98; border-top:5px solid var(--red); background:#153a38; }
+    footer strong { color:#f4e9c5; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; }
+    footer span { font:.64rem/1.5 ui-monospace,monospace; }
+
+    @keyframes swing { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+
+    @media (max-width: 820px) {
+      .topbar { height:60px; padding:0 15px; }
+      .topbar small { display:none; }
+      .topbar nav a:first-child { display:none; }
+      .hero { padding:72px 20px 55px; }
+      .hero h1 { font-size:clamp(3.5rem,17vw,6.2rem); }
+      .hero-bottom { grid-template-columns:1fr; gap:28px; }
+      .split-nav { margin:0 20px 50px; grid-template-columns:1fr; }
+      .family { padding:62px 20px 78px; }
+      .family-head, .example-head { grid-template-columns:1fr; gap:20px; }
+      .mock { aspect-ratio:4/5; }
+      .tradeoffs { grid-template-columns:1fr; }
+      .tradeoffs div { min-height:auto; }
+      .plate .ui-card { top:5%; left:5%; width:70%; }
+      .sequence { padding:6%; }
+      .sequence-panels { grid-template-columns:1fr; gap:2%; height:81%; }
+      .seq-panel { min-height:0; }
+      .sequence-arrow { display:none; }
+      .tapestry-strip { left:3%; width:94%; }
+      .tapestry-clock { top:18%; left:47%; width:42%; height:68%; }
+      .tapestry .ui-card { width:70%; }
+      .iso-wall-back { right:-12%; width:95%; }
+      .iso-wall-left { width:45%; }
+      .iso-floor { left:-20%; right:-20%; }
+      .iso-rug { right:-17%; width:97%; }
+      .iso-copy { top:5%; width:68%; }
+      .iso-clock { top:24%; left:45%; width:38%; height:64%; }
+      .iso-chair { right:-2%; bottom:9%; width:32%; }
+      .iso-shelf { left:4%; top:29%; width:28%; }
+      .cutaway .ui-card { top:5%; width:70%; }
+      .cut-case { top:29%; left:43%; width:43%; height:60%; }
+      .cut-gear--one { top:35%; left:48%; width:40%; }
+      .cut-gear--two { top:55%; left:36%; width:29%; }
+      .cut-gear--three { top:62%; left:68%; width:23%; }
+      .cut-pendulum { top:58%; left:59%; height:25%; }
+      .tiles { flex-direction:column; gap:3%; padding:7% 15%; }
+      .tile { width:66%; height:23%; aspect-ratio:auto; }
+      .tiles .ui-card { top:3%; width:70%; }
+      .matrix { padding:70px 20px 80px; }
+      .matrix-table { grid-template-columns:1.1fr 1fr 1fr; }
+      .matrix-table div { padding:11px 9px; }
+      footer { flex-direction:column; padding:40px 20px; }
+    }
+
+    @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto}.pendulum-swing,.line-pendulum{animation:none} }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div><strong>Illustrated Folio · 2D versus 3D</strong><small>Six visual systems for the same clock story</small></div>
+    <nav><a href="/design-directions.html">First study</a><a href="/">Current site ↗</a></nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="kicker">The next decision</p>
+      <h1>Should the folio be <em>drawn</em> or built in space?</h1>
+      <div class="hero-bottom">
+        <p>Both can feel illustrated. The difference is where the depth comes from: authored composition and layered drawings, or a real camera moving through ink-rendered geometry.</p>
+        <div class="thesis"><b>My bias before seeing the options</b><span>Keep the home in 2D. Reserve spatial depth for the clock’s internal mechanism. That protects the warmth while preserving explanatory power.</span></div>
+      </div>
+    </section>
+
+    <nav class="split-nav" aria-label="Jump to visual family">
+      <a href="#two-d"><span><small>EXAMPLES 01–03</small><br><b>Keep it 2D</b></span><i>↓</i></a>
+      <a href="#three-d"><span><small>EXAMPLES 04–06</small><br><b>Make it 3D isometric</b></span><i>↓</i></a>
+    </nav>
+
+    <section class="family" id="two-d">
+      <div class="family-inner">
+        <div class="family-head"><div><p class="kicker">Visual family A</p><h2>Keep the folio <em>2D</em></h2></div><div><p>Illustration owns the composition. Motion is selective: hands turn, pendulums swing, diagrams unfold and depth comes from layered parallax.</p><span class="family-verdict">Warmest · most authored</span></div></div>
+
+        <article class="example">
+          <div class="example-head"><div><span class="example-id">2D · EXAMPLE 01</span><h3>The inhabited room plate</h3></div><p>One rich interior establishes the emotional world. The clock remains part of the room; selected illustrated layers separate as the story gets mechanical.</p></div>
+          <div class="mock">
+            <div class="plate">
+              <svg viewBox="0 0 1200 675" aria-label="Detailed illustrated room with grandfather clock">
+                <defs>
+                  <pattern id="wall-lines" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M2 0q4 7 0 14M9 0q-3 7 0 14" fill="none" stroke="#173936" stroke-width="1" opacity=".24"/></pattern>
+                  <pattern id="room-rug" width="64" height="64" patternUnits="userSpaceOnUse"><rect width="64" height="64" fill="#9b312d"/><path d="m32 4 28 28-28 28L4 32Z" fill="#d2a13e" stroke="#16434a" stroke-width="5"/><circle cx="32" cy="32" r="7" fill="#16434a"/></pattern>
+                  <pattern id="spines" width="60" height="90" patternUnits="userSpaceOnUse"><rect width="14" height="90" fill="#173f46"/><rect x="16" width="13" height="90" fill="#a6322d"/><rect x="31" width="12" height="90" fill="#d4a13e"/><rect x="45" width="15" height="90" fill="#eadca8"/></pattern>
+                </defs>
+                <rect width="1200" height="675" fill="#eee3bd"/><rect width="1200" height="675" fill="url(#wall-lines)"/>
+                <path d="M0 488 1200 430v245H0Z" fill="#a76236" stroke="#173936" stroke-width="5"/>
+                <path d="M68 500 744 461l360 190-760 24Z" fill="url(#room-rug)" stroke="#16434a" stroke-width="16"/>
+                <rect x="93" y="104" width="218" height="370" fill="#794127" stroke="#173936" stroke-width="7"/><rect x="113" y="127" width="178" height="327" fill="url(#spines)" stroke="#173936" stroke-width="5"/>
+                <path d="M505 92h223l35 66v359H470V158Z" fill="#844426" stroke="#173936" stroke-width="7"/>
+                <circle cx="617" cy="207" r="94" fill="#f2e4ba" stroke="#173936" stroke-width="7"/><circle cx="617" cy="207" r="78" fill="none" stroke="#c7993b" stroke-width="8"/>
+                <path d="m617 207-7-62M617 207l52 38" stroke="#173936" stroke-width="7"/><circle cx="617" cy="207" r="11" fill="#d2a13e" stroke="#173936" stroke-width="5"/>
+                <rect x="520" y="321" width="194" height="163" fill="#43251f" stroke="#173936" stroke-width="7"/>
+                <g class="pendulum-swing"><path d="M617 323v109" stroke="#c89a3b" stroke-width="7"/><circle cx="617" cy="447" r="33" fill="#d2a13e" stroke="#173936" stroke-width="6"/></g>
+                <g transform="translate(818 364)" stroke="#173936" stroke-width="7"><path d="M0 74h250v122H0Z" fill="#eee5c8"/><path d="M28 80V0h194v80" fill="#eee5c8"/><path d="M17 196v57M233 196v57"/></g>
+                <g transform="translate(1040 252)" fill="#315e40" stroke="#173936" stroke-width="5"><path d="M0 172h92l-14 91H17Z" fill="#9a322d"/><ellipse cx="25" cy="131" rx="56" ry="23" transform="rotate(-28 25 131)"/><ellipse cx="71" cy="107" rx="57" ry="23" transform="rotate(24 71 107)"/><ellipse cx="24" cy="68" rx="53" ry="22" transform="rotate(-12 24 68)"/><ellipse cx="70" cy="36" rx="50" ry="21" transform="rotate(26 70 36)"/></g>
+                <g fill="none" stroke="#173936" stroke-width="3" opacity=".48"><path d="M335 81q42 33 84 0t84 0M808 95q54 45 108 0t108 0M844 304q47-34 94 0t94 0"/></g>
+              </svg>
+              <div class="ui-card"><small>03 · The pendulum</small><b>Length chooses the tempo.</b><p>The room stays present while the mechanism peels forward in illustrated layers.</p></div>
+            </div>
+            <span class="mock-tag">Full-room illustration · selective animation</span>
+          </div>
+          <div class="tradeoffs"><div><small>Best at</small><b>Atmosphere and continuity</b><p>The clock always feels like it belongs to a real home.</p></div><div><small>Motion</small><b>Subtle, not showy</b><p>Parallax, pendulum, hands, light shifts and layer reveals.</p></div><div><small>Risk</small><b>Mechanisms can feel flat</b><p>We solve that with sectional drawings and magnified plates.</p></div></div>
+        </article>
+
+        <article class="example">
+          <div class="example-head"><div><span class="example-id">2D · EXAMPLE 02</span><h3>The sequential mechanical folio</h3></div><p>The scroll behaves like a long illustrated book. Every chapter is a composed plate, and the clock visibly accumulates one idea at a time.</p></div>
+          <div class="mock">
+            <div class="sequence"><div class="sequence-title"><b>Gravity, counted</b><small>PLATES 01—03</small></div><div class="sequence-panels">
+              <div class="seq-panel" data-step="01 · FIND A REPEAT"><div class="sun-orbit"></div><div class="sundial"></div></div>
+              <div class="seq-panel" data-step="02 · SET THE RHYTHM"><div class="line-pendulum"></div></div>
+              <div class="seq-panel" data-step="03 · BUILD THE CLOCK"><div class="seq-clock"></div></div>
+            </div><i class="sequence-arrow sequence-arrow--one">→</i><i class="sequence-arrow sequence-arrow--two">→</i></div>
+            <span class="mock-tag">Editorial plates · scroll-built narrative</span>
+          </div>
+          <div class="tradeoffs"><div><small>Best at</small><b>Teaching sequence</b><p>Each idea gets a clean frame and a memorable visual identity.</p></div><div><small>Motion</small><b>Assembly and page turns</b><p>Diagrams draw on, pieces slide together, annotations appear.</p></div><div><small>Risk</small><b>Less like visiting a home</b><p>The interior becomes a recurring motif instead of one continuous place.</p></div></div>
+        </article>
+
+        <article class="example">
+          <div class="example-head"><div><span class="example-id">2D · EXAMPLE 03</span><h3>The living tapestry</h3></div><p>The room’s rugs and textiles become the storytelling surface. The clock appears woven into a long vertical composition that unrolls as the reader moves.</p></div>
+          <div class="mock">
+            <div class="tapestry"><div class="tapestry-strip"></div><div class="tapestry-flower tapestry-flower--a"></div><div class="tapestry-flower tapestry-flower--b"></div><div class="tapestry-clock"></div><div class="ui-card"><small>08 · Energy handoff</small><b>The weight supplies power.</b><p>Patterns carry energy from one part of the clock to the next.</p></div></div>
+            <span class="mock-tag">Textile illustration · continuous scroll</span>
+          </div>
+          <div class="tradeoffs"><div><small>Best at</small><b>Personality and rhythm</b><p>The entire page feels like one collectible illustrated object.</p></div><div><small>Motion</small><b>Pattern becomes physics</b><p>Threads, motifs and borders turn into force and energy paths.</p></div><div><small>Risk</small><b>Most interpretive</b><p>Beautiful, but less literal for viewers wanting a textbook cutaway.</p></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="family family--3d" id="three-d">
+      <div class="family-inner">
+        <div class="family-head"><div><p class="kicker">Visual family B</p><h2>Make it <em>3D isometric</em></h2></div><div><p>A real camera and real depth remain, but the rendering is graphic: flat color, ink outlines, limited materials and authored compositions.</p><span class="family-verdict">Most spatial · highest execution risk</span></div></div>
+
+        <article class="example">
+          <div class="example-head"><div><span class="example-id">3D · EXAMPLE 04</span><h3>The cozy room diorama</h3></div><p>A fixed isometric room gives the clock a home. Furniture and architecture are simplified, but every edge is inked and every surface uses illustration-like color rather than PBR plastic.</p></div>
+          <div class="mock"><div class="iso"><div class="iso-wall-left"></div><div class="iso-wall-back"></div><div class="iso-floor"></div><div class="iso-rug"></div><div class="iso-shelf"></div><div class="iso-clock"></div><div class="iso-chair"></div><div class="ui-card iso-copy"><small>03 · The pendulum</small><b>Length chooses the tempo.</b><p>The room rotates only when a new perspective earns its keep.</p></div></div><span class="mock-tag">Isometric room · toon materials · ink edges</span></div>
+          <div class="tradeoffs"><div><small>Best at</small><b>A sense of place</b><p>We can orbit, reveal the clock’s side and move naturally into cutaways.</p></div><div><small>Motion</small><b>Camera and object choreography</b><p>Room walls open; the clock slides forward; the case becomes transparent.</p></div><div><small>Risk</small><b>Closest to the current problem</b><p>If geometry or lighting slips, it becomes a prettier toy room.</p></div></div>
+        </article>
+
+        <article class="example">
+          <div class="example-head"><div><span class="example-id">3D · EXAMPLE 05</span><h3>The ink-rendered cutaway</h3></div><p>Skip the furnished room after the opening. Put the clock on an illustrated drafting stage where its mechanism can expand, rotate and annotate in real space.</p></div>
+          <div class="mock"><div class="cutaway"><div class="cutaway-platform"></div><div class="cut-case"></div><div class="cut-gear cut-gear--one"></div><div class="cut-gear cut-gear--two"></div><div class="cut-gear cut-gear--three"></div><div class="cut-pendulum"></div><span class="leader leader--one" data-label="Escape wheel"></span><span class="leader leader--two" data-label="Impulse"></span><div class="ui-card"><small>06 · The escapement</small><b>One tooth at a time.</b><p>Spatial depth is reserved for the part that benefits from it.</p></div></div><span class="mock-tag">Isometric cutaway · exploded mechanics</span></div>
+          <div class="tradeoffs"><div><small>Best at</small><b>Mechanical understanding</b><p>Gears, pallets, weights and energy paths can occupy real space.</p></div><div><small>Motion</small><b>Explode, orbit, reassemble</b><p>More useful motion than simply panning around a room.</p></div><div><small>Risk</small><b>Less obviously cozy</b><p>The home must be established through palette, paper and recurring objects.</p></div></div>
+        </article>
+
+        <article class="example">
+          <div class="example-head"><div><span class="example-id">3D · EXAMPLE 06</span><h3>The isometric story tiles</h3></div><p>Each major idea lives on its own little illustrated stage. Scroll replaces one tile with the next until they join into the full clock.</p></div>
+          <div class="mock"><div class="tiles"><div class="ui-card"><small>Story progression</small><b>Repeat. Swing. Count.</b><p>Each tile owns one concept and one interaction.</p></div><div class="tile" data-caption="Find a repeat"><div class="tile-sun"></div></div><div class="tile" data-caption="Set the rhythm"><div class="tile-pend"></div></div><div class="tile" data-caption="Build the clock"><div class="tile-clock"></div></div></div><span class="mock-tag">Isometric chapters · modular vignettes</span></div>
+          <div class="tradeoffs"><div><small>Best at</small><b>Playful modular teaching</b><p>Each physics idea is approachable and visually self-contained.</p></div><div><small>Motion</small><b>Tile-to-tile transitions</b><p>Pieces migrate between stages and eventually snap together.</p></div><div><small>Risk</small><b>Least grown-up option</b><p>The modular stages can read like a board game if over-stylized.</p></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="matrix">
+      <p class="kicker">Decision matrix</p><h2>The honest tradeoff.</h2>
+      <div class="matrix-table">
+        <div class="head">Question</div><div class="head">2D folio</div><div class="head">3D isometric</div>
+        <div><b>Feels coziest?</b></div><div><span>Yes—detail and imperfection are cheap.</span></div><div><span>Only with excellent geometry and shaders.</span></div>
+        <div><b>Explains mechanisms?</b></div><div><span>Very well through sections and callouts.</span></div><div><span>Best for spatial relationships.</span></div>
+        <div><b>Performance?</b></div><div><span>Light, fast and mobile-friendly.</span></div><div><span>Heavier and more device-sensitive.</span></div>
+        <div><b>Most distinctive?</b></div><div><span>01 or 03.</span></div><div><span>05.</span></div>
+        <div><b>My pick?</b></div><div><span><strong>01, with 05-style cutaways rendered as 2.5D.</strong></span></div><div><span>05 if spatial interactivity is essential.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><strong>Choose 01–06, or name a hybrid.</strong><span>The current explainer is still untouched by these comparison studies.</span></footer>
+</body>
+</html>

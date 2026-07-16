@@ -8,6 +8,7 @@ export default defineConfig({
       input: {
         main: new URL('./index.html', import.meta.url).pathname,
         designDirections: new URL('./design-directions.html', import.meta.url).pathname,
+        folioDirections: new URL('./folio-directions.html', import.meta.url).pathname,
       },
     },
   },
