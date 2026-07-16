@@ -7,7 +7,7 @@ import {
   secondsPendulumLength,
 } from './physics.js'
 
-const ClockScene = lazy(() => import('./components/ClockScene.jsx'))
+const IllustratedStage = lazy(() => import('./components/IllustratedStage.jsx'))
 
 const chapters = [
   { id: 'overture', label: 'The clock' },
@@ -214,9 +214,9 @@ export default function App() {
       </aside>
 
       <main className="story">
-        <div className="visual-stage" aria-label="Animated three-dimensional grandfather clock model">
+        <div className="visual-stage" aria-label="Animated illustrated grandfather clock and living room">
           <Suspense fallback={<LoadingModel />}>
-            <ClockScene
+            <IllustratedStage
               active={active}
               length={length}
               amplitude={amplitude}
