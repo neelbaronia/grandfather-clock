@@ -1,0 +1,27 @@
+{
+  "name": "grandfather-clock",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A scroll-driven, first-principles explainer of pendulums, escapements, and weight-driven clocks.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "node --test src/physics.test.js",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.4.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "three": "^0.181.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "4.3.4",
+    "vite": "6.4.3"
+  }
+}
